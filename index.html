@@ -7,15 +7,12 @@
 
   <style>
     :root{
-      /* ✅ NOVA BASE PREMIUM */
       --bg: #000000;
 
-      /* dourado premium (título + destaques) */
       --title: #E3AD24;
       --gold2: #CFA54A;
       --goldSoft: rgba(227,173,36,.20);
 
-      /* azuis frios discretos (reflexos / outlines) */
       --ink: #0A1020;
       --blue: #2B3A66;
       --blue2: rgba(70, 95, 170, .22);
@@ -33,7 +30,6 @@
       --boY: 0px;
       --tintOpacity: 1;
 
-      /* ✅ scale global (aplicado apenas no modo vertical/portrait) */
       --scale: 1;
     }
 
@@ -59,11 +55,7 @@
       height: 100%;
       object-fit: cover;
       transform: scale(1.06);
-
-      /* ✅ vídeo mais visível no fundo preto */
       opacity: .30;
-
-      /* ✅ mantém “premium” (sem ficar lavado) */
       filter: saturate(1.04) contrast(1.08) brightness(.75);
       pointer-events: none;
     }
@@ -71,7 +63,6 @@
       .bgVideo{ display:none; }
     }
 
-    /* ✅ camadas para “mesclar” vídeo com preto e dar profundidade */
     .blackWash{
       position: fixed;
       inset: 0;
@@ -133,8 +124,10 @@
       inset: 0;
       z-index: 0;
       display: flex;
+
+      /* ✅ tudo centralizado no canvas */
       justify-content: center;
-      align-items: flex-start;
+      align-items: center;
     }
 
     .wrapMotion{
@@ -143,14 +136,23 @@
       will-change: transform;
       width: 100%;
       height: 100%;
+
+      /* ✅ garante centralização interna */
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    /* ✅ scaler (scale só no modo vertical via JS) */
     .scaler{
       width: min(1280px, 100vw);
-      transform-origin: top center;
+      transform-origin: center center; /* ✅ scale a partir do centro */
       transform: scale(var(--scale));
       will-change: transform;
+
+      /* ✅ centraliza conteúdo */
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .wrap{
@@ -159,7 +161,10 @@
       display: grid;
       grid-template-rows: auto 1fr auto;
       gap: 10px;
-      align-content: start;
+
+      /* ✅ tudo centralizado */
+      justify-items: center;
+      align-content: center;
     }
 
     .topbar{
@@ -214,12 +219,17 @@
       width: 100%;
       display: grid;
       gap: 10px;
-      align-content: start;
+      align-content: center;
+
+      /* ✅ centraliza cards */
+      justify-items: center;
+
       overflow: hidden;
       padding: 2px 0;
     }
 
     .rowCard{
+      width: 100%;
       border: 1px solid rgba(255,255,255,.12);
       border-radius: 16px;
       background:
@@ -261,15 +271,14 @@
       color: rgba(255,255,255,.96);
       word-break: break-word;
       line-height: 1.2;
+      text-align: center; /* ✅ todas as células centralizadas */
     }
     .cell.turma{
-      text-align: left;
       font-weight: 900;
       letter-spacing: .01em;
-      padding-left: 8px;
+      padding-left: 0; /* ✅ remove deslocamento */
     }
     .cell.sala{
-      text-align: center;
       font-weight: 800;
       color: rgba(255,255,255,.92);
       position: relative;
@@ -288,7 +297,7 @@
     }
 
     .pill{
-      justify-self: end;
+      justify-self: center; /* ✅ pill centralizado também */
       min-width: 58px;
       padding: 8px 12px;
       border-radius: 999px;
@@ -372,29 +381,28 @@
         text-align: center;
         gap: 6px;
       }
-      .cell.turma{ text-align: center; padding-left: 0; }
       .pill{ justify-self: center; margin-top: 2px; }
       .rowCard::before{ width: 0; }
+      .cell.sala::before{ display:none; }
     }
 
     .footerBar{
       width: 100%;
       display:flex;
       align-items:center;
-      justify-content: space-between;
-      gap: 10px;
+      justify-content: center; /* ✅ tudo central */
+      gap: 18px;
       padding: 4px 2px 2px;
+      text-align: center;
     }
     .lastUpdate{
       color: rgba(255,255,255,.68);
       font-size: 12px;
-      text-align: left;
       white-space: nowrap;
     }
     .status{
       color: rgba(255,255,255,.52);
       font-size: 12px;
-      text-align: right;
       white-space: nowrap;
     }
     .status .ok{ color: rgba(255,255,255,.86); }
@@ -478,7 +486,7 @@
   const bgVideo = document.getElementById("bgVideo");
   const scaler = document.getElementById("scaler");
 
-  // ===== fallback vídeo
+  // fallback vídeo
   let videoDisabled = false;
   function disableVideoFallback(reason){
     if (videoDisabled) return;
@@ -500,7 +508,7 @@
     }
   })();
 
-  // ===== anti burn-in
+  // anti burn-in
   function rand(min, max){ return Math.random() * (max - min) + min; }
   function applyBurnInOffset(){
     const x = Math.round(rand(-2, 2));
@@ -511,7 +519,7 @@
   applyBurnInOffset();
   setInterval(applyBurnInOffset, 3 * 60 * 1000);
 
-  // ===== data/hora
+  // data/hora
   function nowInTZDate(){
     const parts = new Intl.DateTimeFormat("en-US", {
       timeZone: TZ, year:"numeric", month:"2-digit", day:"2-digit",
@@ -555,7 +563,7 @@
     return date.toLocaleTimeString("pt-BR", { timeZone: TZ, hour12: false });
   }
 
-  // ===== CSV
+  // CSV
   function parseCSV(text){
     const rows = [];
     let row = [], cell = "", inQuotes = false;
@@ -571,31 +579,22 @@
     if (cell.length || row.length){ row.push(cell); rows.push(row); }
     return rows;
   }
+
   function escapeHtml(str){
     return String(str ?? "")
       .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
       .replaceAll('"',"&quot;").replaceAll("'","&#039;");
   }
 
-  // =========================
-  // ✅ GATILHO MAIS ESPECÍFICO
-  // - Considera "PC vertical" como portrait quando a janela fica estreita/alta
-  // - Usa orientation quando existir, mas decide pelo aspect ratio com threshold
-  // =========================
+  // ✅ gatilho específico: trata PC vertical como portrait
   function shouldUsePortraitMode(){
     const w = window.innerWidth;
     const h = window.innerHeight;
-
-    // razão (h/w). >1 significa “mais alto que largo”.
     const ratio = h / Math.max(1, w);
 
-    // thresholds:
-    // - 1.05: já trata como “vertical” mesmo que o browser não reporte orientation portrait
-    // - também força portrait se largura muito pequena (celulares/colunas)
     const portraitByRatio = ratio >= 1.05;
     const portraitByNarrow = w <= 900 && ratio >= 0.95;
 
-    // se o browser reporta portrait, respeita
     const mq = window.matchMedia?.("(orientation: portrait)");
     const reportedPortrait = (mq && typeof mq.matches === "boolean") ? mq.matches : false;
 
@@ -604,7 +603,6 @@
 
   function fitToScreenPortrait(){
     document.documentElement.style.setProperty("--scale", "1");
-
     requestAnimationFrame(() => {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
@@ -613,7 +611,6 @@
       const naturalW = rect.width;
       const naturalH = scaler.scrollHeight;
 
-      // margem mínima pra ocupar o máximo
       const pad = 2;
 
       const scaleW = (vw - pad) / naturalW;
@@ -626,13 +623,13 @@
 
   function applyLayoutMode(){
     if (shouldUsePortraitMode()){
-      fitToScreenPortrait();          // modo B (vertical)
+      fitToScreenPortrait();
     } else {
-      document.documentElement.style.setProperty("--scale", "1");  // modo A (horizontal, sem scale)
+      document.documentElement.style.setProperty("--scale", "1");
     }
   }
 
-  // ===== diff DOM
+  // diff DOM
   const rowMap = new Map();
 
   function makeCard(rowIndex, a, b, c){
@@ -789,7 +786,6 @@
   window.addEventListener("focus", forceRefresh);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) forceRefresh(); });
 
-  // ✅ em resize, aplica modo (e escala se necessário)
   window.addEventListener("resize", () => applyLayoutMode());
   window.matchMedia?.("(orientation: portrait)")?.addEventListener?.("change", () => applyLayoutMode());
 
