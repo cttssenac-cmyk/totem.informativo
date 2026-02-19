@@ -11,17 +11,9 @@
 
       --title: #E3AD24;
       --gold2: #CFA54A;
-      --goldSoft: rgba(227,173,36,.20);
-
-      --ink: #0A1020;
-      --blue: #2B3A66;
-      --blue2: rgba(70, 95, 170, .22);
 
       --text: rgba(255,255,255,.96);
       --muted: rgba(255,255,255,.74);
-
-      --cardTop: rgba(255,255,255,.10);
-      --cardBot: rgba(255,255,255,.05);
 
       --radius: 18px;
       --shadow: 0 18px 54px rgba(0,0,0,.55);
@@ -30,7 +22,11 @@
       --boY: 0px;
       --tintOpacity: 1;
 
+      /* ✅ scale global (apenas em PC vertical) */
       --scale: 1;
+
+      /* ✅ controla scroll do body conforme modo */
+      --bodyOverflowY: hidden;
     }
 
     *{ box-sizing:border-box; }
@@ -42,8 +38,12 @@
       height: 100vh;
       width: 100vw;
       background: var(--bg);
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: var(--bodyOverflowY);
       position: relative;
+
+      /* ✅ rolagem mais suave */
+      -webkit-overflow-scrolling: touch;
     }
 
     /* ===== FUNDO COM VÍDEO ===== */
@@ -118,16 +118,16 @@
       .topbar{ animation: none !important; }
     }
 
-    /* ===== STAGE + WRAP ===== */
+    /* ===== LAYOUT ===== */
     .stage{
-      position: fixed;
-      inset: 0;
+      position: relative; /* ✅ permite scroll no body quando habilitado */
+      min-height: 100vh;
+      width: 100%;
       z-index: 0;
       display: flex;
-
-      /* ✅ tudo centralizado no canvas */
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
+      padding: 10px 0;
     }
 
     .wrapMotion{
@@ -135,24 +135,18 @@
       transition: transform 900ms ease;
       will-change: transform;
       width: 100%;
-      height: 100%;
-
-      /* ✅ garante centralização interna */
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
     }
 
     .scaler{
       width: min(1280px, 100vw);
-      transform-origin: center center; /* ✅ scale a partir do centro */
+      transform-origin: top center;
       transform: scale(var(--scale));
       will-change: transform;
-
-      /* ✅ centraliza conteúdo */
       display: flex;
       justify-content: center;
-      align-items: center;
     }
 
     .wrap{
@@ -162,9 +156,8 @@
       grid-template-rows: auto 1fr auto;
       gap: 10px;
 
-      /* ✅ tudo centralizado */
       justify-items: center;
-      align-content: center;
+      align-content: start;
     }
 
     .topbar{
@@ -215,16 +208,14 @@
       color: rgba(255,255,255,.92);
     }
 
+    /* ✅ LISTA SEM OVERFLOW: deixa o BODY rolar quando necessário */
     .list{
       width: 100%;
       display: grid;
       gap: 10px;
-      align-content: center;
-
-      /* ✅ centraliza cards */
+      align-content: start;
       justify-items: center;
-
-      overflow: hidden;
+      overflow: visible;
       padding: 2px 0;
     }
 
@@ -245,16 +236,9 @@
       grid-template-columns: 1.6fr 1.2fr auto;
       align-items: center;
       gap: 12px;
-      overflow: hidden;
       position: relative;
+      overflow: hidden;
       transition: transform .18s ease, background .18s ease, outline-color .18s ease;
-      will-change: transform;
-    }
-
-    .rowCard.enter{ animation: cardIn .22s ease-out both; }
-    @keyframes cardIn{
-      from{ opacity: 0; transform: translateY(6px); }
-      to  { opacity: 1; transform: translateY(0); }
     }
 
     .rowCard::before{
@@ -271,12 +255,11 @@
       color: rgba(255,255,255,.96);
       word-break: break-word;
       line-height: 1.2;
-      text-align: center; /* ✅ todas as células centralizadas */
+      text-align: center;
     }
     .cell.turma{
       font-weight: 900;
       letter-spacing: .01em;
-      padding-left: 0; /* ✅ remove deslocamento */
     }
     .cell.sala{
       font-weight: 800;
@@ -297,7 +280,7 @@
     }
 
     .pill{
-      justify-self: center; /* ✅ pill centralizado também */
+      justify-self: center;
       min-width: 58px;
       padding: 8px 12px;
       border-radius: 999px;
@@ -319,7 +302,6 @@
         inset 0 1px 0 rgba(255,255,255,.20),
         inset 0 -1px 0 rgba(0,0,0,.42);
     }
-
     .pill::before{
       content:"";
       position:absolute;
@@ -329,7 +311,6 @@
       opacity: .95;
       pointer-events:none;
     }
-
     .pill .sheen{
       position:absolute;
       inset: -60% -40%;
@@ -356,14 +337,6 @@
       100% { transform: translateX(70%); opacity: 0; }
     }
 
-    .rowCard.changed{
-      outline: 2px solid rgba(70, 95, 170, .40);
-      background:
-        radial-gradient(120% 140% at 18% 10%, rgba(70, 95, 170, .16), transparent 62%),
-        linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
-      transform: translateY(-2px);
-    }
-
     .empty{
       width: 100%;
       border: 1px dashed rgba(255,255,255,.20);
@@ -378,19 +351,17 @@
     @media (max-width: 720px){
       .rowCard{
         grid-template-columns: 1fr;
-        text-align: center;
         gap: 6px;
       }
-      .pill{ justify-self: center; margin-top: 2px; }
-      .rowCard::before{ width: 0; }
       .cell.sala::before{ display:none; }
+      .rowCard::before{ width: 0; }
     }
 
     .footerBar{
       width: 100%;
       display:flex;
       align-items:center;
-      justify-content: center; /* ✅ tudo central */
+      justify-content: center;
       gap: 18px;
       padding: 4px 2px 2px;
       text-align: center;
@@ -445,7 +416,7 @@
   <div class="stage">
     <div class="wrapMotion">
       <div class="scaler" id="scaler">
-        <div class="wrap" id="wrap">
+        <div class="wrap">
           <div class="topbar">
             <h1>Salas de Aula</h1>
             <div class="period" id="periodLabel">—</div>
@@ -486,7 +457,7 @@
   const bgVideo = document.getElementById("bgVideo");
   const scaler = document.getElementById("scaler");
 
-  // fallback vídeo
+  // ===== fallback vídeo
   let videoDisabled = false;
   function disableVideoFallback(reason){
     if (videoDisabled) return;
@@ -508,7 +479,7 @@
     }
   })();
 
-  // anti burn-in
+  // ===== anti burn-in
   function rand(min, max){ return Math.random() * (max - min) + min; }
   function applyBurnInOffset(){
     const x = Math.round(rand(-2, 2));
@@ -519,7 +490,7 @@
   applyBurnInOffset();
   setInterval(applyBurnInOffset, 3 * 60 * 1000);
 
-  // data/hora
+  // ===== data/hora
   function nowInTZDate(){
     const parts = new Intl.DateTimeFormat("en-US", {
       timeZone: TZ, year:"numeric", month:"2-digit", day:"2-digit",
@@ -563,7 +534,7 @@
     return date.toLocaleTimeString("pt-BR", { timeZone: TZ, hour12: false });
   }
 
-  // CSV
+  // ===== CSV
   function parseCSV(text){
     const rows = [];
     let row = [], cell = "", inQuotes = false;
@@ -586,19 +557,42 @@
       .replaceAll('"',"&quot;").replaceAll("'","&#039;");
   }
 
-  // ✅ gatilho específico: trata PC vertical como portrait
-  function shouldUsePortraitMode(){
+  // ✅ regras:
+  // - Mobile (qualquer orientação): sem scale + COM scroll
+  // - Landscape (desktop/TV): sem scale + COM scroll
+  // - PC vertical: COM scale + SEM scroll (caber tudo)
+  function isMobile(){
+    return window.matchMedia?.("(max-width: 720px)")?.matches || window.innerWidth <= 720;
+  }
+
+  function isLandscape(){
+    return window.innerWidth >= window.innerHeight;
+  }
+
+  function shouldUsePortraitScale(){
+    // PC vertical / janela bem alta
     const w = window.innerWidth;
     const h = window.innerHeight;
     const ratio = h / Math.max(1, w);
 
-    const portraitByRatio = ratio >= 1.05;
-    const portraitByNarrow = w <= 900 && ratio >= 0.95;
+    // só escala se NÃO for mobile, e for "bem vertical"
+    return (!isMobile()) && (ratio >= 1.05) && (w > 720);
+  }
 
-    const mq = window.matchMedia?.("(orientation: portrait)");
-    const reportedPortrait = (mq && typeof mq.matches === "boolean") ? mq.matches : false;
+  function applyLayoutMode(){
+    const mobile = isMobile();
+    const landscape = isLandscape();
+    const useScale = shouldUsePortraitScale();
 
-    return reportedPortrait || portraitByRatio || portraitByNarrow;
+    if (useScale){
+      // PC vertical: scale e sem scroll
+      document.documentElement.style.setProperty("--bodyOverflowY", "hidden");
+      fitToScreenPortrait();
+    } else {
+      // Mobile (qualquer) OU landscape: sem scale e com scroll
+      document.documentElement.style.setProperty("--scale", "1");
+      document.documentElement.style.setProperty("--bodyOverflowY", "auto");
+    }
   }
 
   function fitToScreenPortrait(){
@@ -621,20 +615,12 @@
     });
   }
 
-  function applyLayoutMode(){
-    if (shouldUsePortraitMode()){
-      fitToScreenPortrait();
-    } else {
-      document.documentElement.style.setProperty("--scale", "1");
-    }
-  }
-
-  // diff DOM
+  // ===== diff DOM
   const rowMap = new Map();
 
   function makeCard(rowIndex, a, b, c){
     const card = document.createElement("div");
-    card.className = "rowCard enter";
+    card.className = "rowCard";
     card.dataset.row = String(rowIndex);
 
     const turma = document.createElement("div");
@@ -653,13 +639,16 @@
     card.appendChild(sala);
     card.appendChild(pill);
 
-    requestAnimationFrame(() => setTimeout(() => card.classList.remove("enter"), 260));
     return { card, turma, sala, pill };
   }
 
   function setChanged(card){
-    card.classList.add("changed");
-    setTimeout(() => card.classList.remove("changed"), 900);
+    card.style.outline = "2px solid rgba(70, 95, 170, .40)";
+    card.style.transform = "translateY(-2px)";
+    setTimeout(() => {
+      card.style.outline = "";
+      card.style.transform = "";
+    }, 900);
   }
 
   function updateCardNodes(nodes, a, b, c){
@@ -720,11 +709,9 @@
   }
 
   function setStatus(kind, msg){
-    if (kind === "ok"){
-      statusLabel.innerHTML = `<span class="ok"><span class="dot"></span>${escapeHtml(msg)}</span>`;
-    } else {
-      statusLabel.innerHTML = `<span class="bad"><span class="dot bad"></span>${escapeHtml(msg)}</span>`;
-    }
+    const dot = kind === "ok" ? "dot" : "dot bad";
+    const cls = kind === "ok" ? "ok" : "bad";
+    statusLabel.innerHTML = `<span class="${cls}"><span class="${dot}"></span>${escapeHtml(msg)}</span>`;
   }
 
   async function fetchWithTimeout(url, timeoutMs){
@@ -786,6 +773,7 @@
   window.addEventListener("focus", forceRefresh);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) forceRefresh(); });
 
+  // ✅ aplica modo em resize/orientação
   window.addEventListener("resize", () => applyLayoutMode());
   window.matchMedia?.("(orientation: portrait)")?.addEventListener?.("change", () => applyLayoutMode());
 
