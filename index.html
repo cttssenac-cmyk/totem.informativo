@@ -4,52 +4,251 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mapa de Sala</title>
-  <style>
-    :root{
-      --bg:#0b0c10; --panel:#12141b; --text:#f2f3f5; --muted:#b7bcc7; --line:rgba(255,255,255,.10);
-      --radius:16px;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
-    .wrap{max-width:1100px;margin:0 auto;padding:clamp(14px,2.5vw,28px);min-height:100vh;display:grid;grid-template-rows:auto auto 1fr auto;gap:14px}
-    header{display:grid;gap:8px;padding:18px 18px 10px;border:1px solid var(--line);border-radius:var(--radius);
-      background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,0))}
-    h1{margin:0;font-size:clamp(36px,5vw,72px);letter-spacing:-.02em;line-height:1}
-    .period{font-size:clamp(18px,2.2vw,28px);font-weight:700}
-    .date{font-size:clamp(14px,1.7vw,18px);color:var(--muted)}
-    .status{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid var(--line);
-      border-radius:var(--radius);background:rgba(255,255,255,.03);color:var(--muted);font-size:14px}
-    .badge{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.03);color:var(--text);
-      font-weight:650;font-size:12px;white-space:nowrap}
-    .panel{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);overflow:hidden}
-    table{width:100%;border-collapse:collapse}
-    thead th{padding:14px;text-align:left;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);
-      background:rgba(255,255,255,.03);border-bottom:1px solid var(--line);position:sticky;top:0}
-    tbody td{padding:14px;border-bottom:1px solid var(--line);vertical-align:top;font-size:clamp(14px,1.6vw,18px)}
-    tbody tr:last-child td{border-bottom:none}
-    .empty{padding:22px 16px;color:var(--muted)}
 
-    @media (max-width:680px){
-      thead{display:none}
-      table,tbody,tr,td{display:block;width:100%}
-      tbody tr{border-bottom:1px solid var(--line);padding:10px 12px}
-      tbody tr:last-child{border-bottom:none}
-      tbody td{border:none;padding:8px 4px}
-      .label{display:block;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+  <style>
+    /* =============================
+       PALETA (Senac)
+       Azul 1: #004A8D
+       Azul 2: #005692
+       Laranja: #F7941D
+       Laranja claro: #FDC180
+       Azul claro: #79CEDC
+       Vinho: #4D2F40
+    ============================== */
+    :root{
+      --bg: #4D2F40;        /* base escura */
+      --panel: #004A8D;     /* painéis */
+      --panel2: #005692;    /* variação */
+      --text: #ffffff;
+      --muted: rgba(255,255,255,.80);
+      --line: rgba(255,255,255,.14);
+
+      --accent: #F7941D;    /* CTA / destaque */
+      --accentSoft: #FDC180;/* apoio */
+      --info: #79CEDC;      /* status ok / highlight */
+
+      --radius: 16px;
+      --shadow: 0 14px 40px rgba(0,0,0,.35);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      background:
+        radial-gradient(1100px 600px at 15% 10%, rgba(121,206,220,.25), transparent 58%),
+        radial-gradient(900px 500px at 85% 18%, rgba(247,148,30,.18), transparent 55%),
+        linear-gradient(180deg, rgba(0,74,141,.22), rgba(0,74,141,0) 55%),
+        var(--bg);
+    }
+
+    .wrap{
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: clamp(14px, 2.5vw, 28px);
+      display:grid;
+      gap:14px;
+      min-height:100vh;
+      grid-template-rows: auto auto 1fr auto;
+    }
+
+    /* Top */
+    .topbar{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      padding: 18px 18px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,0));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .title{ display:grid; gap:8px; }
+    h1{
+      margin:0;
+      font-size: clamp(38px, 5vw, 74px);
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .subline{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+    }
+
+    .period{
+      font-size: clamp(18px, 2.2vw, 28px);
+      font-weight: 850;
+      letter-spacing: .01em;
+      color: var(--accentSoft);
+    }
+    .date{
+      font-size: clamp(14px, 1.7vw, 18px);
+      color: var(--muted);
+    }
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:flex-end;
+      align-items:center;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 12px;
+      border:1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(0,74,141,.22);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 13px;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .chip small{ color: rgba(255,255,255,.75); font-weight:650; }
+
+    .btn{
+      cursor:pointer;
+      border: 1px solid rgba(247,148,30,.55);
+      background: linear-gradient(180deg, rgba(247,148,30,.95), rgba(247,148,30,.70));
+      color: #1b0f17;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing:.01em;
+      transition: transform .08s ease, filter .12s ease;
+    }
+    .btn:hover{ filter: brightness(1.06); }
+    .btn:active{ transform: translateY(1px); }
+
+    .status{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(0,74,141,.18);
+      color: rgba(255,255,255,.86);
+      box-shadow: 0 10px 26px rgba(0,0,0,.18);
+      backdrop-filter: blur(8px);
+    }
+    .status strong{ color: var(--text); }
+
+    .dot{
+      width:10px;height:10px;border-radius:999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(247,148,30,.20);
+      display:inline-block;
+      vertical-align:middle;
+      margin-right:8px;
+    }
+    .dot.ok{ background: var(--info); box-shadow: 0 0 0 4px rgba(121,206,220,.18); }
+    .dot.bad{ background: #ff6b6b; box-shadow: 0 0 0 4px rgba(255,107,107,.16); }
+
+    /* Table/Card */
+    .panel{
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow:hidden;
+      box-shadow: var(--shadow);
+      background: linear-gradient(180deg, rgba(0,74,141,.46), rgba(0,86,146,.26));
+      backdrop-filter: blur(10px);
+    }
+
+    table{ width:100%; border-collapse:collapse; }
+    thead th{
+      text-align:left;
+      padding: 14px;
+      font-size: 13px;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.88);
+      background: rgba(0,86,146,.35);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(8px);
+    }
+
+    tbody td{
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      font-size: clamp(14px, 1.6vw, 18px);
+      background: rgba(0,0,0,0);
+      transition: background .35s ease;
+    }
+    tbody tr:nth-child(2n) td{ background: rgba(255,255,255,.05); }
+    tbody tr:last-child td{ border-bottom:none; }
+
+    .changed td{
+      background: rgba(121,206,220,.22) !important; /* highlight ao mudar */
+    }
+
+    .empty{ padding: 20px 16px; color: rgba(255,255,255,.78); }
+
+    /* Mobile vira cards */
+    @media (max-width: 720px){
+      thead{ display:none; }
+      table, tbody, tr, td{ display:block; width:100%; }
+      tbody tr{ border-bottom: 1px solid var(--line); padding: 10px 12px; }
+      tbody tr:last-child{ border-bottom:none; }
+      tbody td{ border:none; padding: 9px 4px; background: transparent !important; }
+      .label{
+        display:block;
+        color: rgba(255,255,255,.75);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin-bottom: 4px;
+      }
+      .changed{ background: rgba(121,206,220,.22) !important; border-radius: 12px; }
+      .changed td{ background: transparent !important; }
+    }
+
+    footer{
+      color: rgba(255,255,255,.55);
+      font-size: 12px;
+      padding: 4px 2px;
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    <header>
-      <h1>Mapa de Sala</h1>
-      <div class="period" id="periodLabel">—</div>
-      <div class="date" id="dateLabel">—</div>
-    </header>
+
+    <div class="topbar">
+      <div class="title">
+        <h1>Mapa de Sala</h1>
+        <div class="subline">
+          <div class="period" id="periodLabel">—</div>
+          <div class="date" id="dateLabel">—</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <div class="chip"><small>Atualiza</small> <span id="pollLabel">—</span></div>
+        <button class="btn" id="fsBtn">Tela cheia</button>
+      </div>
+    </div>
 
     <div class="status">
-      <div id="statusText">Carregando…</div>
-      <div class="badge" id="refreshBadge">Atualização: —</div>
+      <div id="statusText"><span class="dot"></span>Carregando…</div>
+      <div class="chip"><small>Última</small> <span id="lastLabel">—</span></div>
     </div>
 
     <div class="panel">
@@ -67,33 +266,45 @@
       </table>
     </div>
 
-    <div style="color: rgba(255,255,255,.45); font-size: 12px; padding: 4px 2px;">
-      Deixe esta página aberta em tela cheia para rodar 24h.
-    </div>
+    <footer>
+      Para TV: deixe aberto em tela cheia. Em queda de rede, o sistema tenta reconectar sozinho.
+    </footer>
+
   </div>
 
 <script>
-  // ========= CONFIG =========
+  // ==============================
+  // CONFIG
+  // ==============================
   const TZ = "America/Sao_Paulo";
 
-  // CSV do "Publish to web"
+  // CSV publicado (Publish to web) - aba gid=356224596
   const SHEET_CSV_URL =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLR82lwtLhKVZNboLfA7kqJ5NPHhvTZ-sQWQGLrLT6IQo5GhJ4DfAjjlJsahl0-nqlZO8tpJuHE_VG/pub?output=csv&gid=356224596";
 
-  // Quer “o mais rápido possível”? 2000ms–5000ms costuma ser estável em TVs.
+  // Atualização rápida (cuidado: valores muito baixos podem ficar instáveis).
   const POLL_MS = 3000;
 
-  // Range alvo
-  const START_ROW = 29; // inclusive
-  const END_ROW   = 48; // inclusive
-  const COLS = 3;       // A,B,C
+  // Range alvo A29:C48
+  const START_ROW = 29;
+  const END_ROW   = 48;
 
+  // ==============================
+  // ELEMENTOS
+  // ==============================
   const periodEl = document.getElementById("periodLabel");
   const dateEl = document.getElementById("dateLabel");
   const tbody = document.getElementById("tbody");
   const statusText = document.getElementById("statusText");
-  const refreshBadge = document.getElementById("refreshBadge");
+  const lastLabel = document.getElementById("lastLabel");
+  const pollLabel = document.getElementById("pollLabel");
+  const fsBtn = document.getElementById("fsBtn");
 
+  pollLabel.textContent = `${Math.round(POLL_MS/1000)}s`;
+
+  // ==============================
+  // TEMPO / RÓTULOS
+  // ==============================
   function nowInTZDate(){
     const parts = new Intl.DateTimeFormat("en-US", {
       timeZone: TZ, year:"numeric", month:"2-digit", day:"2-digit",
@@ -105,12 +316,13 @@
 
   function getPeriodLabel(date){
     const total = date.getHours()*60 + date.getMinutes();
-    if (total <= (11*60+30)) return "Manhã";     // 00:00–11:30
-    if (total <= (17*60+30)) return "Tarde";     // 11:31–17:30
+    if (total <= (11*60 + 30)) return "Manhã";  // 00:00–11:30
+    if (total <= (17*60 + 30)) return "Tarde";  // 11:31–17:30
     return "Noite";                              // 17:31–23:59
   }
 
   function formatPtBrLongDate(date){
+    // "segunda-feira, 16 de fevereiro de 2026"
     return new Intl.DateTimeFormat("pt-BR", {
       timeZone: TZ, weekday:"long", day:"numeric", month:"long", year:"numeric"
     }).format(date);
@@ -122,7 +334,9 @@
     dateEl.textContent = formatPtBrLongDate(tzNow);
   }
 
-  // CSV parser simples (suporta aspas)
+  // ==============================
+  // CSV (parser simples com aspas)
+  // ==============================
   function parseCSV(text){
     const rows = [];
     let row = [], cell = "", inQuotes = false;
@@ -134,18 +348,14 @@
       if (c === '"' && inQuotes && next === '"'){ cell += '"'; i++; continue; }
       if (c === '"'){ inQuotes = !inQuotes; continue; }
 
-      if (!inQuotes && (c === ',')){
-        row.push(cell); cell = ""; continue;
-      }
-      if (!inQuotes && (c === '\n')){
-        row.push(cell);
-        rows.push(row);
+      if (!inQuotes && c === ','){ row.push(cell); cell = ""; continue; }
+      if (!inQuotes && c === '\n'){
+        row.push(cell); rows.push(row);
         row = []; cell = "";
         continue;
       }
       if (c !== '\r') cell += c;
     }
-    // última linha
     if (cell.length || row.length){ row.push(cell); rows.push(row); }
     return rows;
   }
@@ -156,14 +366,23 @@
       .replaceAll('"',"&quot;").replaceAll("'","&#039;");
   }
 
+  // ==============================
+  // RENDER + HIGHLIGHT DE MUDANÇA
+  // ==============================
+  let lastDataKey = null;
+
   function render(rowsABC){
-    const isMobile = window.matchMedia("(max-width: 680px)").matches;
-    const nonEmpty = rowsABC.filter(r => (r[0] || r[1] || r[2]).trim?.() !== "");
+    const isMobile = window.matchMedia("(max-width: 720px)").matches;
+    const nonEmpty = rowsABC.filter(r => ((r[0]||"") + (r[1]||"") + (r[2]||"")).trim() !== "");
 
     if (!nonEmpty.length){
       tbody.innerHTML = `<tr><td class="empty">Sem dados em A${START_ROW}:C${END_ROW}.</td></tr>`;
       return;
     }
+
+    const dataKey = nonEmpty.map(r => r.join("¦")).join("§");
+    const changed = (lastDataKey !== null && dataKey !== lastDataKey);
+    lastDataKey = dataKey;
 
     tbody.innerHTML = nonEmpty.map(r => {
       if (!isMobile){
@@ -179,8 +398,26 @@
         <td><span class="label">Coluna C</span>${escapeHtml(r[2]) || "—"}</td>
       </tr>`;
     }).join("");
+
+    if (changed){
+      [...tbody.querySelectorAll("tr")].forEach(tr => tr.classList.add("changed"));
+      setTimeout(() => {
+        [...tbody.querySelectorAll("tr")].forEach(tr => tr.classList.remove("changed"));
+      }, 900);
+    }
   }
 
+  // ==============================
+  // STATUS
+  // ==============================
+  function setStatus(kind, message){
+    const dotClass = kind === "ok" ? "dot ok" : kind === "bad" ? "dot bad" : "dot";
+    statusText.innerHTML = `<span class="${dotClass}"></span><strong>${message}</strong>`;
+  }
+
+  // ==============================
+  // LOOP DE ATUALIZAÇÃO (com backoff)
+  // ==============================
   let timer = null;
   let backoff = POLL_MS;
 
@@ -188,35 +425,32 @@
     try{
       setHeaderClock();
 
-      // Evita cache agressivo
-      const url = SHEET_CSV_URL + `&__t=${Date.now()}`;
+      const url = SHEET_CSV_URL + `&__t=${Date.now()}`; // evita cache
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
       const csv = await res.text();
       const all = parseCSV(csv);
 
-      // Observação: CSV é 1-based visualmente, mas array é 0-based.
-      // A29 => índice 28. A48 => índice 47.
+      // A29 => índice 28 (0-based). A48 => índice 47.
       const startIdx = START_ROW - 1;
       const endIdx = END_ROW - 1;
 
-      const slice = all.slice(startIdx, endIdx + 1).map(r => {
-        const a = (r[0] ?? "").trim();
-        const b = (r[1] ?? "").trim();
-        const c = (r[2] ?? "").trim();
-        return [a, b, c];
-      });
+      const slice = all.slice(startIdx, endIdx + 1).map(r => [
+        (r[0] ?? "").trim(),
+        (r[1] ?? "").trim(),
+        (r[2] ?? "").trim(),
+      ]);
 
       render(slice);
 
       const tzNow = nowInTZDate();
-      statusText.textContent = "Online · Dados carregados";
-      refreshBadge.textContent = `Atualização: ${tzNow.toLocaleTimeString("pt-BR", { timeZone: TZ })}`;
+      lastLabel.textContent = tzNow.toLocaleTimeString("pt-BR", { timeZone: TZ });
+      setStatus("ok", "Online · Dados atualizados");
 
       backoff = POLL_MS;
     } catch (e){
-      statusText.textContent = `Falha ao atualizar (tentando de novo) · ${e?.message || e}`;
+      setStatus("bad", "Falha ao atualizar · Tentando reconectar");
       backoff = Math.min(Math.round(backoff * 1.6), 60000);
     } finally {
       clearTimeout(timer);
@@ -224,6 +458,22 @@
     }
   }
 
+  // ==============================
+  // FULLSCREEN (TV)
+  // ==============================
+  function isFullscreen(){ return !!document.fullscreenElement; }
+  async function toggleFullscreen(){
+    try{
+      if (!isFullscreen()) await document.documentElement.requestFullscreen();
+      else await document.exitFullscreen();
+    } catch {}
+  }
+  fsBtn.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", () => {
+    fsBtn.textContent = isFullscreen() ? "Sair da tela cheia" : "Tela cheia";
+  });
+
+  // start
   setHeaderClock();
   setInterval(setHeaderClock, 10000);
   tick();
