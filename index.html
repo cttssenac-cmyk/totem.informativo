@@ -7,25 +7,20 @@
 
   <style>
     :root{
-      --bg: #000000;
-
-      --title: #E3AD24;
-      --gold2: #CFA54A;
-
+      --bg:#000;
+      --title:#E3AD24;
       --text: rgba(255,255,255,.96);
       --muted: rgba(255,255,255,.74);
-
-      --radius: 18px;
+      --radius:18px;
       --shadow: 0 18px 54px rgba(0,0,0,.55);
 
-      --boX: 0px;
-      --boY: 0px;
+      --boX:0px; --boY:0px;
       --tintOpacity: 1;
 
-      /* ✅ scale global (apenas em PC vertical) */
+      /* scale só em PC vertical */
       --scale: 1;
 
-      /* ✅ controla scroll do body conforme modo */
+      /* body scroll controlado por JS */
       --bodyOverflowY: hidden;
     }
 
@@ -41,8 +36,6 @@
       overflow-x: hidden;
       overflow-y: var(--bodyOverflowY);
       position: relative;
-
-      /* ✅ rolagem mais suave */
       -webkit-overflow-scrolling: touch;
     }
 
@@ -55,8 +48,8 @@
       height: 100%;
       object-fit: cover;
       transform: scale(1.06);
-      opacity: .30;
-      filter: saturate(1.04) contrast(1.08) brightness(.75);
+      opacity: .32; /* um pouco mais visível */
+      filter: saturate(1.04) contrast(1.08) brightness(.72);
       pointer-events: none;
     }
     @media (max-width: 720px){
@@ -64,21 +57,14 @@
     }
 
     .blackWash{
-      position: fixed;
-      inset: 0;
-      z-index: -5;
-      pointer-events: none;
-      background: radial-gradient(1200px 700px at 50% 15%, rgba(0,0,0,.35), rgba(0,0,0,.70) 60%, rgba(0,0,0,.86));
+      position: fixed; inset:0; z-index:-5; pointer-events:none;
+      background: radial-gradient(1200px 700px at 50% 15%, rgba(0,0,0,.30), rgba(0,0,0,.72) 60%, rgba(0,0,0,.88));
     }
-
     .bgTint{
-      position: fixed;
-      inset: -25%;
-      z-index: -4;
-      pointer-events: none;
+      position: fixed; inset:-25%; z-index:-4; pointer-events:none;
       opacity: var(--tintOpacity);
       background:
-        radial-gradient(1050px 620px at 16% 12%, rgba(43, 58, 102, .30), transparent 62%),
+        radial-gradient(1050px 620px at 16% 12%, rgba(43, 58, 102, .28), transparent 62%),
         radial-gradient(900px 540px at 84% 18%, rgba(227, 173, 36, .18), transparent 62%),
         radial-gradient(900px 720px at 50% 92%, rgba(207, 165, 74, .12), transparent 68%),
         linear-gradient(180deg, rgba(0,0,0,.62), rgba(0,0,0,0) 55%);
@@ -88,39 +74,34 @@
       transform: translate3d(0,0,0);
     }
     @keyframes bgFloat{
-      0%   { transform: translate3d(0,0,0) scale(1); }
-      50%  { transform: translate3d(1.2%, -1.1%, 0) scale(1.05); }
-      100% { transform: translate3d(0,0,0) scale(1); }
+      0%{transform: translate3d(0,0,0) scale(1);}
+      50%{transform: translate3d(1.2%,-1.1%,0) scale(1.05);}
+      100%{transform: translate3d(0,0,0) scale(1);}
     }
 
     .grain{
-      position: fixed;
-      inset: -30%;
-      z-index: -3;
-      pointer-events: none;
-      opacity: .06;
-      mix-blend-mode: overlay;
-      background-image:
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
-      background-size: 260px 260px;
+      position: fixed; inset:-30%; z-index:-3; pointer-events:none;
+      opacity:.06; mix-blend-mode:overlay;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+      background-size:260px 260px;
       animation: grainMove 11s steps(10) infinite;
       filter: contrast(120%) brightness(108%);
     }
     @keyframes grainMove{
-      0%{ transform: translate3d(0,0,0) scale(1); }
-      50%{ transform: translate3d(-3%, 2%, 0) scale(1.02); }
-      100%{ transform: translate3d(0,0,0) scale(1); }
+      0%{transform: translate3d(0,0,0) scale(1);}
+      50%{transform: translate3d(-3%,2%,0) scale(1.02);}
+      100%{transform: translate3d(0,0,0) scale(1);}
     }
 
     @media (prefers-reduced-motion: reduce){
-      .bgTint, .grain, .pill .sheen, .dot{ animation: none !important; }
-      .pill .sheen{ opacity: 0; }
-      .topbar{ animation: none !important; }
+      .bgTint, .grain, .pill .sheen, .dot{ animation:none !important; }
+      .pill .sheen{ opacity:0; }
+      .topbar{ animation:none !important; }
     }
 
-    /* ===== LAYOUT ===== */
+    /* ===== LAYOUT (central) ===== */
     .stage{
-      position: relative; /* ✅ permite scroll no body quando habilitado */
+      position: relative;
       min-height: 100vh;
       width: 100%;
       z-index: 0;
@@ -155,14 +136,13 @@
       display: grid;
       grid-template-rows: auto 1fr auto;
       gap: 10px;
-
       justify-items: center;
       align-content: start;
     }
 
     .topbar{
       width: 100%;
-      padding: 14px 16px;
+      padding: 14px 16px 16px;
       border: 1px solid rgba(255,255,255,.12);
       border-radius: var(--radius);
       background:
@@ -175,8 +155,18 @@
       transform-origin: center;
     }
     @keyframes headerBreath{
-      0%,100% { transform: translateY(0); }
-      50%     { transform: translateY(-1px); }
+      0%,100%{ transform: translateY(0); }
+      50%{ transform: translateY(-1px); }
+    }
+
+    /* ✅ logo */
+    .logo{
+      display: block;
+      width: clamp(140px, 18vw, 240px);
+      height: auto;
+      margin: 2px auto 10px;
+      filter: drop-shadow(0 14px 28px rgba(0,0,0,.55));
+      opacity: .98;
     }
 
     h1{
@@ -186,13 +176,13 @@
       line-height: 1;
       color: var(--title);
       text-shadow: 0 16px 44px rgba(0,0,0,.65);
-      font-family: "Georgia", "Times New Roman", serif;
+      font-family: "Georgia","Times New Roman",serif;
     }
+
     .period{
       margin-top: 8px;
       font-size: clamp(16px, 1.6vw, 26px);
       font-weight: 900;
-      letter-spacing: .01em;
       color: rgba(255,255,255,.92);
     }
     .date{
@@ -208,7 +198,6 @@
       color: rgba(255,255,255,.92);
     }
 
-    /* ✅ LISTA SEM OVERFLOW: deixa o BODY rolar quando necessário */
     .list{
       width: 100%;
       display: grid;
@@ -226,9 +215,7 @@
       background:
         radial-gradient(120% 140% at 18% 10%, rgba(227,173,36,.08), transparent 62%),
         linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
-      box-shadow:
-        0 22px 62px rgba(0,0,0,.55),
-        0 6px 14px rgba(0,0,0,.26);
+      box-shadow: 0 22px 62px rgba(0,0,0,.55), 0 6px 14px rgba(0,0,0,.26);
       backdrop-filter: blur(14px);
 
       padding: 14px 14px;
@@ -244,10 +231,10 @@
     .rowCard::before{
       content:"";
       position:absolute;
-      inset: 0;
-      width: 6px;
+      inset:0;
+      width:6px;
       background: linear-gradient(180deg, rgba(227,173,36,.95), rgba(207,165,74,0));
-      opacity: .62;
+      opacity:.62;
     }
 
     .cell{
@@ -257,15 +244,9 @@
       line-height: 1.2;
       text-align: center;
     }
-    .cell.turma{
-      font-weight: 900;
-      letter-spacing: .01em;
-    }
-    .cell.sala{
-      font-weight: 800;
-      color: rgba(255,255,255,.92);
-      position: relative;
-    }
+    .cell.turma{ font-weight: 900; letter-spacing:.01em; }
+    .cell.sala{ font-weight: 800; color: rgba(255,255,255,.92); position:relative; }
+
     @media (min-width: 721px){
       .cell.sala::before{
         content:"";
@@ -291,16 +272,15 @@
         linear-gradient(180deg, rgba(227,173,36,.26), rgba(43,58,102,.18)),
         linear-gradient(180deg, rgba(0,0,0,.40), rgba(0,0,0,.18));
       border: 1px solid rgba(227,173,36,.62);
-      color: #FFFFFF;
+      color: #fff;
       font-weight: 950;
       font-size: clamp(12px, 1.1vw, 16px);
       letter-spacing: .10em;
       text-align: center;
       backdrop-filter: blur(12px);
-      box-shadow:
-        0 16px 30px rgba(0,0,0,.42),
-        inset 0 1px 0 rgba(255,255,255,.20),
-        inset 0 -1px 0 rgba(0,0,0,.42);
+      box-shadow: 0 16px 30px rgba(0,0,0,.42),
+                  inset 0 1px 0 rgba(255,255,255,.20),
+                  inset 0 -1px 0 rgba(0,0,0,.42);
     }
     .pill::before{
       content:"";
@@ -314,27 +294,20 @@
     .pill .sheen{
       position:absolute;
       inset: -60% -40%;
-      background: linear-gradient(
-        115deg,
-        transparent 35%,
-        rgba(255,255,255,.22) 45%,
-        rgba(227,173,36,.16) 50%,
-        rgba(255,255,255,.12) 55%,
-        transparent 65%
-      );
+      background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.22) 45%, rgba(227,173,36,.16) 50%, rgba(255,255,255,.12) 55%, transparent 65%);
       transform: translateX(-60%);
       opacity: .65;
       pointer-events:none;
       mix-blend-mode: screen;
       animation: pillSheen 8.8s ease-in-out infinite;
-      filter: blur(0.5px);
+      filter: blur(.5px);
     }
     @keyframes pillSheen{
-      0%   { transform: translateX(-70%); opacity: 0; }
-      20%  { opacity: .45; }
-      50%  { transform: translateX(70%); opacity: .45; }
-      85%  { opacity: .10; }
-      100% { transform: translateX(70%); opacity: 0; }
+      0%{ transform: translateX(-70%); opacity:0; }
+      20%{ opacity:.45; }
+      50%{ transform: translateX(70%); opacity:.45; }
+      85%{ opacity:.10; }
+      100%{ transform: translateX(70%); opacity:0; }
     }
 
     .empty{
@@ -349,12 +322,9 @@
     }
 
     @media (max-width: 720px){
-      .rowCard{
-        grid-template-columns: 1fr;
-        gap: 6px;
-      }
+      .rowCard{ grid-template-columns: 1fr; gap: 6px; }
       .cell.sala::before{ display:none; }
-      .rowCard::before{ width: 0; }
+      .rowCard::before{ width:0; }
     }
 
     .footerBar{
@@ -366,16 +336,8 @@
       padding: 4px 2px 2px;
       text-align: center;
     }
-    .lastUpdate{
-      color: rgba(255,255,255,.68);
-      font-size: 12px;
-      white-space: nowrap;
-    }
-    .status{
-      color: rgba(255,255,255,.52);
-      font-size: 12px;
-      white-space: nowrap;
-    }
+    .lastUpdate{ color: rgba(255,255,255,.68); font-size: 12px; white-space: nowrap; }
+    .status{ color: rgba(255,255,255,.52); font-size: 12px; white-space: nowrap; }
     .status .ok{ color: rgba(255,255,255,.86); }
     .status .bad{ color: rgba(255,107,107,.95); }
 
@@ -389,18 +351,14 @@
       animation: dotPulse 2.2s ease-in-out infinite;
       vertical-align: middle;
     }
-    .dot.bad{
-      background: rgba(255,107,107,.95);
-      box-shadow: 0 0 0 0 rgba(255,107,107,.18);
-      animation: dotPulseBad 1.8s ease-in-out infinite;
-    }
+    .dot.bad{ background: rgba(255,107,107,.95); animation: dotPulseBad 1.8s ease-in-out infinite; }
     @keyframes dotPulse{
-      0%,100%{ box-shadow: 0 0 0 0 rgba(255,255,255,.18); opacity:.9; }
-      50%{ box-shadow: 0 0 0 10px rgba(255,255,255,0); opacity:.65; }
+      0%,100%{ box-shadow:0 0 0 0 rgba(255,255,255,.18); opacity:.9; }
+      50%{ box-shadow:0 0 0 10px rgba(255,255,255,0); opacity:.65; }
     }
     @keyframes dotPulseBad{
-      0%,100%{ box-shadow: 0 0 0 0 rgba(255,107,107,.18); opacity:.95; }
-      50%{ box-shadow: 0 0 0 10px rgba(255,107,107,0); opacity:.65; }
+      0%,100%{ box-shadow:0 0 0 0 rgba(255,107,107,.18); opacity:.95; }
+      50%{ box-shadow:0 0 0 10px rgba(255,107,107,0); opacity:.65; }
     }
   </style>
 </head>
@@ -418,6 +376,9 @@
       <div class="scaler" id="scaler">
         <div class="wrap">
           <div class="topbar">
+            <!-- ✅ logo SVG (coloque o arquivo no mesmo diretório do index.html) -->
+            <img class="logo" src="logo-senac.svg" alt="Senac" loading="eager" />
+
             <h1>Salas de Aula</h1>
             <div class="period" id="periodLabel">—</div>
             <div class="date" id="dateLabel">—</div>
@@ -443,7 +404,9 @@
   const SHEET_CSV_BASE =
     "https://docs.google.com/spreadsheets/d/1L7Rf7ksHbH_L2-yjQl6kqg464j1aqNRdFOAPuLJNXm8/export?format=csv&gid=356224596";
 
-  const POLL_MS = 3000;
+  // ✅ recomendado (não impacta Netlify; ajuda Sheets e rede)
+  const POLL_MS = 10000; // mude para 3000 se quiser, mas eu não recomendo em várias telas
+
   const FETCH_TIMEOUT_MS = 8000;
   const START_ROW = 29;
   const END_ROW   = 48;
@@ -457,7 +420,7 @@
   const bgVideo = document.getElementById("bgVideo");
   const scaler = document.getElementById("scaler");
 
-  // ===== fallback vídeo
+  // fallback vídeo
   let videoDisabled = false;
   function disableVideoFallback(reason){
     if (videoDisabled) return;
@@ -479,18 +442,16 @@
     }
   })();
 
-  // ===== anti burn-in
+  // anti burn-in
   function rand(min, max){ return Math.random() * (max - min) + min; }
   function applyBurnInOffset(){
-    const x = Math.round(rand(-2, 2));
-    const y = Math.round(rand(-2, 2));
-    document.documentElement.style.setProperty("--boX", `${x}px`);
-    document.documentElement.style.setProperty("--boY", `${y}px`);
+    document.documentElement.style.setProperty("--boX", `${Math.round(rand(-2,2))}px`);
+    document.documentElement.style.setProperty("--boY", `${Math.round(rand(-2,2))}px`);
   }
   applyBurnInOffset();
   setInterval(applyBurnInOffset, 3 * 60 * 1000);
 
-  // ===== data/hora
+  // data/hora
   function nowInTZDate(){
     const parts = new Intl.DateTimeFormat("en-US", {
       timeZone: TZ, year:"numeric", month:"2-digit", day:"2-digit",
@@ -519,7 +480,7 @@
     dateEl.textContent = formatPtBrLongDate(tzNow);
   }
 
-  // relógio “base rede”
+  // relógio base rede
   let networkOffsetMs = 0;
   function renderClock(){
     const adjusted = new Date(Date.now() + networkOffsetMs);
@@ -534,7 +495,7 @@
     return date.toLocaleTimeString("pt-BR", { timeZone: TZ, hour12: false });
   }
 
-  // ===== CSV
+  // CSV
   function parseCSV(text){
     const rows = [];
     let row = [], cell = "", inQuotes = false;
@@ -557,42 +518,20 @@
       .replaceAll('"',"&quot;").replaceAll("'","&#039;");
   }
 
-  // ✅ regras:
-  // - Mobile (qualquer orientação): sem scale + COM scroll
-  // - Landscape (desktop/TV): sem scale + COM scroll
-  // - PC vertical: COM scale + SEM scroll (caber tudo)
+  // ✅ regras de layout:
+  // - Mobile (qualquer orientação): sem scale + scroll
+  // - Landscape (desktop/TV): sem scale + scroll
+  // - PC vertical: scale + sem scroll
   function isMobile(){
-    return window.matchMedia?.("(max-width: 720px)")?.matches || window.innerWidth <= 720;
+    return window.innerWidth <= 720 || (window.matchMedia?.("(max-width: 720px)")?.matches ?? false);
   }
-
   function isLandscape(){
     return window.innerWidth >= window.innerHeight;
   }
-
   function shouldUsePortraitScale(){
-    // PC vertical / janela bem alta
-    const w = window.innerWidth;
-    const h = window.innerHeight;
+    const w = window.innerWidth, h = window.innerHeight;
     const ratio = h / Math.max(1, w);
-
-    // só escala se NÃO for mobile, e for "bem vertical"
     return (!isMobile()) && (ratio >= 1.05) && (w > 720);
-  }
-
-  function applyLayoutMode(){
-    const mobile = isMobile();
-    const landscape = isLandscape();
-    const useScale = shouldUsePortraitScale();
-
-    if (useScale){
-      // PC vertical: scale e sem scroll
-      document.documentElement.style.setProperty("--bodyOverflowY", "hidden");
-      fitToScreenPortrait();
-    } else {
-      // Mobile (qualquer) OU landscape: sem scale e com scroll
-      document.documentElement.style.setProperty("--scale", "1");
-      document.documentElement.style.setProperty("--bodyOverflowY", "auto");
-    }
   }
 
   function fitToScreenPortrait(){
@@ -606,7 +545,6 @@
       const naturalH = scaler.scrollHeight;
 
       const pad = 2;
-
       const scaleW = (vw - pad) / naturalW;
       const scaleH = (vh - pad) / naturalH;
 
@@ -615,7 +553,18 @@
     });
   }
 
-  // ===== diff DOM
+  function applyLayoutMode(){
+    const useScale = shouldUsePortraitScale();
+    if (useScale){
+      document.documentElement.style.setProperty("--bodyOverflowY", "hidden");
+      fitToScreenPortrait();
+    } else {
+      document.documentElement.style.setProperty("--scale", "1");
+      document.documentElement.style.setProperty("--bodyOverflowY", "auto");
+    }
+  }
+
+  // diff DOM
   const rowMap = new Map();
 
   function makeCard(rowIndex, a, b, c){
@@ -643,18 +592,14 @@
   }
 
   function setChanged(card){
-    card.style.outline = "2px solid rgba(70, 95, 170, .40)";
+    card.style.outline = "2px solid rgba(70,95,170,.40)";
     card.style.transform = "translateY(-2px)";
-    setTimeout(() => {
-      card.style.outline = "";
-      card.style.transform = "";
-    }, 900);
+    setTimeout(() => { card.style.outline=""; card.style.transform=""; }, 900);
   }
 
   function updateCardNodes(nodes, a, b, c){
     if (nodes.turma.textContent !== a) nodes.turma.textContent = a;
     if (nodes.sala.textContent !== b) nodes.sala.textContent = b;
-
     const currentText = (nodes.pill.textContent || "").trim();
     if (currentText !== (c || "").trim()){
       nodes.pill.innerHTML = `<span class="sheen"></span>${escapeHtml(c)}`;
@@ -773,11 +718,9 @@
   window.addEventListener("focus", forceRefresh);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) forceRefresh(); });
 
-  // ✅ aplica modo em resize/orientação
   window.addEventListener("resize", () => applyLayoutMode());
   window.matchMedia?.("(orientation: portrait)")?.addEventListener?.("change", () => applyLayoutMode());
 
-  // init
   setHeaderLabels();
   renderClock();
   setInterval(setHeaderLabels, 10000);
