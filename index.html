@@ -7,27 +7,33 @@
 
   <style>
     :root{
-      --bg: #000C2E;
+      /* ✅ NOVA BASE PREMIUM */
+      --bg: #000000;
+
+      /* dourado premium (título + destaques) */
       --title: #E3AD24;
-      --blue: #46598E;
-      --bronzeDeep: #635A42;
-      --goldMuted: #A38843;
-      --white: #FFFFFF;
+      --gold2: #CFA54A;
+      --goldSoft: rgba(227,173,36,.20);
+
+      /* azuis frios discretos (reflexos / outlines) */
+      --ink: #0A1020;
+      --blue: #2B3A66;
+      --blue2: rgba(70, 95, 170, .22);
 
       --text: rgba(255,255,255,.96);
+      --muted: rgba(255,255,255,.74);
 
       --cardTop: rgba(255,255,255,.10);
       --cardBot: rgba(255,255,255,.05);
 
       --radius: 18px;
-      --shadow: 0 16px 44px rgba(0,0,0,.34);
+      --shadow: 0 18px 54px rgba(0,0,0,.55);
 
       --boX: 0px;
       --boY: 0px;
-
       --tintOpacity: 1;
 
-      /* ✅ escala global calculada via JS */
+      /* ✅ scale global (aplicado apenas no modo vertical/portrait) */
       --scale: 1;
     }
 
@@ -52,28 +58,41 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transform: scale(1.05);
-      opacity: .22;
-      filter: saturate(1.06) contrast(1.06) brightness(.92);
+      transform: scale(1.06);
+
+      /* ✅ vídeo mais visível no fundo preto */
+      opacity: .30;
+
+      /* ✅ mantém “premium” (sem ficar lavado) */
+      filter: saturate(1.04) contrast(1.08) brightness(.75);
       pointer-events: none;
     }
     @media (max-width: 720px){
       .bgVideo{ display:none; }
     }
 
+    /* ✅ camadas para “mesclar” vídeo com preto e dar profundidade */
+    .blackWash{
+      position: fixed;
+      inset: 0;
+      z-index: -5;
+      pointer-events: none;
+      background: radial-gradient(1200px 700px at 50% 15%, rgba(0,0,0,.35), rgba(0,0,0,.70) 60%, rgba(0,0,0,.86));
+    }
+
     .bgTint{
       position: fixed;
-      inset: -20%;
-      z-index: -5;
+      inset: -25%;
+      z-index: -4;
       pointer-events: none;
       opacity: var(--tintOpacity);
       background:
-        radial-gradient(1100px 650px at 16% 12%, rgba(70, 89, 142, .28), transparent 62%),
-        radial-gradient(900px 520px at 84% 18%, rgba(227, 173, 36, .18), transparent 62%),
-        radial-gradient(900px 680px at 50% 92%, rgba(163, 136, 67, .16), transparent 68%),
-        linear-gradient(180deg, rgba(0,0,0,.32), rgba(0,0,0,0) 55%);
-      mix-blend-mode: overlay;
-      filter: blur(14px) saturate(1.03);
+        radial-gradient(1050px 620px at 16% 12%, rgba(43, 58, 102, .30), transparent 62%),
+        radial-gradient(900px 540px at 84% 18%, rgba(227, 173, 36, .18), transparent 62%),
+        radial-gradient(900px 720px at 50% 92%, rgba(207, 165, 74, .12), transparent 68%),
+        linear-gradient(180deg, rgba(0,0,0,.62), rgba(0,0,0,0) 55%);
+      mix-blend-mode: screen;
+      filter: blur(16px) saturate(1.02);
       animation: bgFloat 24s ease-in-out infinite;
       transform: translate3d(0,0,0);
     }
@@ -86,15 +105,15 @@
     .grain{
       position: fixed;
       inset: -30%;
-      z-index: -4;
+      z-index: -3;
       pointer-events: none;
-      opacity: .05;
+      opacity: .06;
       mix-blend-mode: overlay;
       background-image:
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
       background-size: 260px 260px;
       animation: grainMove 11s steps(10) infinite;
-      filter: contrast(115%) brightness(112%);
+      filter: contrast(120%) brightness(108%);
     }
     @keyframes grainMove{
       0%{ transform: translate3d(0,0,0) scale(1); }
@@ -108,7 +127,7 @@
       .topbar{ animation: none !important; }
     }
 
-    /* ===== STAGE + SCALE (proporcional) ===== */
+    /* ===== STAGE + WRAP ===== */
     .stage{
       position: fixed;
       inset: 0;
@@ -126,7 +145,7 @@
       height: 100%;
     }
 
-    /* ✅ scaler: mantém proporções do layout inteiro */
+    /* ✅ scaler (scale só no modo vertical via JS) */
     .scaler{
       width: min(1280px, 100vw);
       transform-origin: top center;
@@ -136,22 +155,23 @@
 
     .wrap{
       width: 100%;
-      padding: 10px 14px;          /* ✅ menor padding: usa mais tela */
-      height: auto;
+      padding: 10px 14px;
       display: grid;
-      grid-template-rows: auto 1fr auto;  /* ✅ removeu a linha do botão */
+      grid-template-rows: auto 1fr auto;
       gap: 10px;
       align-content: start;
     }
 
     .topbar{
       width: 100%;
-      padding: 14px 16px 14px;
-      border: 1px solid rgba(255,255,255,.13);
+      padding: 14px 16px;
+      border: 1px solid rgba(255,255,255,.12);
       border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,0));
+      background:
+        radial-gradient(120% 130% at 20% 10%, rgba(227,173,36,.10), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,0));
       box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
       text-align: center;
       animation: headerBreath 8.5s ease-in-out infinite;
       transform-origin: center;
@@ -167,7 +187,7 @@
       letter-spacing: -0.02em;
       line-height: 1;
       color: var(--title);
-      text-shadow: 0 12px 34px rgba(0,0,0,.32);
+      text-shadow: 0 16px 44px rgba(0,0,0,.65);
       font-family: "Georgia", "Times New Roman", serif;
     }
     .period{
@@ -180,7 +200,7 @@
     .date{
       margin-top: 2px;
       font-size: clamp(12px, 1.2vw, 18px);
-      color: rgba(255,255,255,.78);
+      color: var(--muted);
     }
     .clock{
       margin-top: 6px;
@@ -200,13 +220,15 @@
     }
 
     .rowCard{
-      border: 1px solid rgba(255,255,255,.13);
+      border: 1px solid rgba(255,255,255,.12);
       border-radius: 16px;
-      background: linear-gradient(180deg, var(--cardTop), var(--cardBot));
+      background:
+        radial-gradient(120% 140% at 18% 10%, rgba(227,173,36,.08), transparent 62%),
+        linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
       box-shadow:
-        0 18px 44px rgba(0,0,0,.26),
-        0 6px 14px rgba(0,0,0,.18);
-      backdrop-filter: blur(12px);
+        0 22px 62px rgba(0,0,0,.55),
+        0 6px 14px rgba(0,0,0,.26);
+      backdrop-filter: blur(14px);
 
       padding: 14px 14px;
       display: grid;
@@ -215,7 +237,6 @@
       gap: 12px;
       overflow: hidden;
       position: relative;
-
       transition: transform .18s ease, background .18s ease, outline-color .18s ease;
       will-change: transform;
     }
@@ -231,8 +252,8 @@
       position:absolute;
       inset: 0;
       width: 6px;
-      background: linear-gradient(180deg, rgba(227,173,36,.92), rgba(163,136,67,0));
-      opacity: .58;
+      background: linear-gradient(180deg, rgba(227,173,36,.95), rgba(207,165,74,0));
+      opacity: .62;
     }
 
     .cell{
@@ -273,23 +294,21 @@
       border-radius: 999px;
       position: relative;
       overflow: hidden;
-
       background:
-        radial-gradient(120% 120% at 30% 18%, rgba(255,255,255,.16), transparent 60%),
-        linear-gradient(180deg, rgba(163,136,67,.34), rgba(70,89,142,.18)),
-        linear-gradient(180deg, rgba(0,0,0,.26), rgba(0,0,0,.12));
-      border: 1px solid rgba(227,173,36,.55);
-
+        radial-gradient(120% 120% at 30% 18%, rgba(255,255,255,.18), transparent 60%),
+        linear-gradient(180deg, rgba(227,173,36,.26), rgba(43,58,102,.18)),
+        linear-gradient(180deg, rgba(0,0,0,.40), rgba(0,0,0,.18));
+      border: 1px solid rgba(227,173,36,.62);
       color: #FFFFFF;
       font-weight: 950;
       font-size: clamp(12px, 1.1vw, 16px);
       letter-spacing: .10em;
       text-align: center;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
       box-shadow:
-        0 14px 26px rgba(0,0,0,.24),
-        inset 0 1px 0 rgba(255,255,255,.18),
-        inset 0 -1px 0 rgba(0,0,0,.30);
+        0 16px 30px rgba(0,0,0,.42),
+        inset 0 1px 0 rgba(255,255,255,.20),
+        inset 0 -1px 0 rgba(0,0,0,.42);
     }
 
     .pill::before{
@@ -297,8 +316,8 @@
       position:absolute;
       inset: 1px;
       border-radius: 999px;
-      background: linear-gradient(180deg, rgba(227,173,36,.20), transparent 55%);
-      opacity: .85;
+      background: linear-gradient(180deg, rgba(227,173,36,.18), transparent 55%);
+      opacity: .95;
       pointer-events:none;
     }
 
@@ -308,8 +327,8 @@
       background: linear-gradient(
         115deg,
         transparent 35%,
-        rgba(255,255,255,.20) 45%,
-        rgba(227,173,36,.14) 50%,
+        rgba(255,255,255,.22) 45%,
+        rgba(227,173,36,.16) 50%,
         rgba(255,255,255,.12) 55%,
         transparent 65%
       );
@@ -329,8 +348,10 @@
     }
 
     .rowCard.changed{
-      outline: 2px solid rgba(70, 89, 142, .40);
-      background: linear-gradient(180deg, rgba(70, 89, 142, .16), rgba(255,255,255,.06));
+      outline: 2px solid rgba(70, 95, 170, .40);
+      background:
+        radial-gradient(120% 140% at 18% 10%, rgba(70, 95, 170, .16), transparent 62%),
+        linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
       transform: translateY(-2px);
     }
 
@@ -341,8 +362,8 @@
       padding: 18px 16px;
       color: rgba(255,255,255,.86);
       text-align: center;
-      background: rgba(255,255,255,.06);
-      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,.05);
+      backdrop-filter: blur(12px);
     }
 
     @media (max-width: 720px){
@@ -365,7 +386,7 @@
       padding: 4px 2px 2px;
     }
     .lastUpdate{
-      color: rgba(255,255,255,.65);
+      color: rgba(255,255,255,.68);
       font-size: 12px;
       text-align: left;
       white-space: nowrap;
@@ -376,7 +397,7 @@
       text-align: right;
       white-space: nowrap;
     }
-    .status .ok{ color: rgba(255,255,255,.88); }
+    .status .ok{ color: rgba(255,255,255,.86); }
     .status .bad{ color: rgba(255,107,107,.95); }
 
     .dot{
@@ -384,7 +405,7 @@
       width:6px; height:6px;
       border-radius:999px;
       margin-right:8px;
-      background: rgba(255,255,255,.88);
+      background: rgba(255,255,255,.86);
       box-shadow: 0 0 0 0 rgba(255,255,255,.18);
       animation: dotPulse 2.2s ease-in-out infinite;
       vertical-align: middle;
@@ -409,13 +430,14 @@
   <video class="bgVideo" id="bgVideo" autoplay muted loop playsinline preload="auto">
     <source src="bg.mp4" type="video/mp4" />
   </video>
+  <div class="blackWash" aria-hidden="true"></div>
   <div class="bgTint" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
 
   <div class="stage">
     <div class="wrapMotion">
       <div class="scaler" id="scaler">
-        <div class="wrap">
+        <div class="wrap" id="wrap">
           <div class="topbar">
             <h1>Salas de Aula</h1>
             <div class="period" id="periodLabel">—</div>
@@ -456,7 +478,7 @@
   const bgVideo = document.getElementById("bgVideo");
   const scaler = document.getElementById("scaler");
 
-  // fallback vídeo
+  // ===== fallback vídeo
   let videoDisabled = false;
   function disableVideoFallback(reason){
     if (videoDisabled) return;
@@ -478,7 +500,7 @@
     }
   })();
 
-  // anti burn-in
+  // ===== anti burn-in
   function rand(min, max){ return Math.random() * (max - min) + min; }
   function applyBurnInOffset(){
     const x = Math.round(rand(-2, 2));
@@ -489,7 +511,7 @@
   applyBurnInOffset();
   setInterval(applyBurnInOffset, 3 * 60 * 1000);
 
-  // date/time
+  // ===== data/hora
   function nowInTZDate(){
     const parts = new Intl.DateTimeFormat("en-US", {
       timeZone: TZ, year:"numeric", month:"2-digit", day:"2-digit",
@@ -533,7 +555,7 @@
     return date.toLocaleTimeString("pt-BR", { timeZone: TZ, hour12: false });
   }
 
-  // CSV
+  // ===== CSV
   function parseCSV(text){
     const rows = [];
     let row = [], cell = "", inQuotes = false;
@@ -555,9 +577,34 @@
       .replaceAll('"',"&quot;").replaceAll("'","&#039;");
   }
 
-  // ✅ scale global: mantém proporção e usa o máximo da tela
-  function fitToScreen(){
+  // =========================
+  // ✅ GATILHO MAIS ESPECÍFICO
+  // - Considera "PC vertical" como portrait quando a janela fica estreita/alta
+  // - Usa orientation quando existir, mas decide pelo aspect ratio com threshold
+  // =========================
+  function shouldUsePortraitMode(){
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    // razão (h/w). >1 significa “mais alto que largo”.
+    const ratio = h / Math.max(1, w);
+
+    // thresholds:
+    // - 1.05: já trata como “vertical” mesmo que o browser não reporte orientation portrait
+    // - também força portrait se largura muito pequena (celulares/colunas)
+    const portraitByRatio = ratio >= 1.05;
+    const portraitByNarrow = w <= 900 && ratio >= 0.95;
+
+    // se o browser reporta portrait, respeita
+    const mq = window.matchMedia?.("(orientation: portrait)");
+    const reportedPortrait = (mq && typeof mq.matches === "boolean") ? mq.matches : false;
+
+    return reportedPortrait || portraitByRatio || portraitByNarrow;
+  }
+
+  function fitToScreenPortrait(){
     document.documentElement.style.setProperty("--scale", "1");
+
     requestAnimationFrame(() => {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
@@ -566,7 +613,7 @@
       const naturalW = rect.width;
       const naturalH = scaler.scrollHeight;
 
-      // ✅ margem menor para ocupar mais tela
+      // margem mínima pra ocupar o máximo
       const pad = 2;
 
       const scaleW = (vw - pad) / naturalW;
@@ -577,7 +624,15 @@
     });
   }
 
-  // diff DOM
+  function applyLayoutMode(){
+    if (shouldUsePortraitMode()){
+      fitToScreenPortrait();          // modo B (vertical)
+    } else {
+      document.documentElement.style.setProperty("--scale", "1");  // modo A (horizontal, sem scale)
+    }
+  }
+
+  // ===== diff DOM
   const rowMap = new Map();
 
   function makeCard(rowIndex, a, b, c){
@@ -664,7 +719,7 @@
       listEl.innerHTML = `<div class="empty">Sem dados em A${START_ROW}:C${END_ROW}.</div>`;
     }
 
-    fitToScreen();
+    applyLayoutMode();
   }
 
   function setStatus(kind, msg){
@@ -729,17 +784,22 @@
     clearTimeout(timer);
     timer = setTimeout(tick, 200);
   }
+
   window.addEventListener("online", forceRefresh);
   window.addEventListener("focus", forceRefresh);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) forceRefresh(); });
-  window.addEventListener("resize", () => fitToScreen());
+
+  // ✅ em resize, aplica modo (e escala se necessário)
+  window.addEventListener("resize", () => applyLayoutMode());
+  window.matchMedia?.("(orientation: portrait)")?.addEventListener?.("change", () => applyLayoutMode());
 
   // init
   setHeaderLabels();
   renderClock();
   setInterval(setHeaderLabels, 10000);
   setInterval(renderClock, 250);
-  fitToScreen();
+
+  applyLayoutMode();
   tick();
 </script>
 </body>
