@@ -25,16 +25,94 @@
 
     *{ box-sizing:border-box; }
 
+    /* ✅ Fundo com movimento elegante + ✅ grain sutil por cima */
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color: var(--text);
       min-height: 100vh;
+      background: var(--bg);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Camada animada do fundo */
+    body::before{
+      content:"";
+      position: fixed;
+      inset: -20%;
+      z-index: -3;
       background:
-        radial-gradient(1100px 600px at 15% 10%, rgba(121,206,220,.25), transparent 58%),
-        radial-gradient(900px 500px at 85% 18%, rgba(247,148,30,.18), transparent 55%),
-        linear-gradient(180deg, rgba(0,74,141,.22), rgba(0,74,141,0) 55%),
-        var(--bg);
+        radial-gradient(1200px 650px at 15% 10%, rgba(121,206,220,.30), transparent 60%),
+        radial-gradient(950px 520px at 85% 18%, rgba(247,148,30,.22), transparent 60%),
+        radial-gradient(900px 700px at 50% 90%, rgba(0,86,146,.22), transparent 65%),
+        linear-gradient(180deg, rgba(0,74,141,.22), rgba(0,74,141,0) 60%);
+      filter: blur(14px) saturate(1.15);
+      transform: translate3d(0,0,0);
+      animation: bgFloat 18s ease-in-out infinite;
+    }
+
+    /* Segunda camada (profundidade) */
+    body::after{
+      content:"";
+      position: fixed;
+      inset: -30%;
+      z-index: -4;
+      background:
+        radial-gradient(1000px 600px at 20% 80%, rgba(253,193,128,.12), transparent 60%),
+        radial-gradient(1000px 600px at 78% 72%, rgba(121,206,220,.12), transparent 60%);
+      filter: blur(22px) saturate(1.08);
+      animation: bgDrift 26s ease-in-out infinite;
+    }
+
+    @keyframes bgFloat{
+      0%   { transform: translate3d(0,0,0) scale(1); }
+      25%  { transform: translate3d(-2.5%, -1.5%, 0) scale(1.03); }
+      50%  { transform: translate3d(2.0%, 1.0%, 0) scale(1.05); }
+      75%  { transform: translate3d(1.0%, -2.0%, 0) scale(1.03); }
+      100% { transform: translate3d(0,0,0) scale(1); }
+    }
+
+    @keyframes bgDrift{
+      0%   { transform: translate3d(0,0,0) scale(1.02); }
+      33%  { transform: translate3d(2.5%, -2.0%, 0) scale(1.04); }
+      66%  { transform: translate3d(-2.0%, 2.0%, 0) scale(1.03); }
+      100% { transform: translate3d(0,0,0) scale(1.02); }
+    }
+
+    /* ✅ Grain (ruído) sutil — fica por cima do fundo, mas atrás do conteúdo */
+    .grain{
+      position: fixed;
+      inset: -30%;
+      z-index: -2;
+      pointer-events: none;
+      opacity: .10; /* intensidade do grain (0.06–0.14 é o “ponto”) */
+      mix-blend-mode: overlay;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+      background-size: 260px 260px;
+      transform: translate3d(0,0,0);
+      animation: grainMove 9s steps(10) infinite;
+      filter: contrast(115%) brightness(105%);
+    }
+
+    @keyframes grainMove{
+      0%   { transform: translate3d(0,0,0) scale(1); }
+      10%  { transform: translate3d(-2%, -3%, 0) scale(1.02); }
+      20%  { transform: translate3d(-4%,  2%, 0) scale(1.02); }
+      30%  { transform: translate3d( 3%, -4%, 0) scale(1.03); }
+      40%  { transform: translate3d( 5%,  1%, 0) scale(1.02); }
+      50%  { transform: translate3d(-3%,  4%, 0) scale(1.03); }
+      60%  { transform: translate3d(-5%, -1%, 0) scale(1.02); }
+      70%  { transform: translate3d( 2%,  5%, 0) scale(1.03); }
+      80%  { transform: translate3d( 4%, -2%, 0) scale(1.02); }
+      90%  { transform: translate3d(-1%, -5%, 0) scale(1.03); }
+      100% { transform: translate3d(0,0,0) scale(1); }
+    }
+
+    /* Acessibilidade */
+    @media (prefers-reduced-motion: reduce){
+      body::before, body::after, .grain{ animation: none; }
     }
 
     .wrap{
@@ -45,11 +123,10 @@
       display: grid;
       grid-template-rows: auto auto 1fr auto;
       gap: 14px;
-      justify-items: center; /* centraliza tudo */
+      justify-items: center;
       align-content: start;
     }
 
-    /* Logo */
     .logoBox{
       width: 100%;
       display: grid;
@@ -57,7 +134,7 @@
       padding-top: 6px;
     }
     .logoBox img{
-      width: clamp(110px, 18vw, 190px);
+      width: clamp(120px, 18vw, 210px);
       height: auto;
       display: block;
       filter: drop-shadow(0 10px 20px rgba(0,0,0,.25));
@@ -65,7 +142,6 @@
       -webkit-user-drag: none;
     }
 
-    /* Header centralizado */
     .topbar{
       width: 100%;
       padding: 20px 18px 18px;
@@ -106,7 +182,6 @@
       color: rgba(255,255,255,.92);
     }
 
-    /* Mini bar central */
     .mini{
       width: 100%;
       display:flex;
@@ -147,7 +222,6 @@
     .btn:hover{ filter: brightness(1.06); }
     .btn:active{ transform: translateY(1px); }
 
-    /* Dados (sem títulos de colunas) */
     .panel{
       width: 100%;
       border: 1px solid var(--line);
@@ -161,7 +235,6 @@
     table{ width:100%; border-collapse: collapse; }
     thead{ display:none; }
 
-    /* 3 colunas por linha (A, B, C) */
     tbody tr{
       display: grid;
       grid-template-columns: 1.4fr 1fr 1fr;
@@ -181,9 +254,7 @@
       background: rgba(255,255,255,.05);
     }
 
-    .changed{
-      background: rgba(121,206,220,.20) !important;
-    }
+    .changed{ background: rgba(121,206,220,.20) !important; }
 
     .empty{
       padding: 18px 16px;
@@ -191,7 +262,6 @@
       text-align: center;
     }
 
-    /* Mobile: empilha A/B/C (sem rótulos) */
     @media (max-width: 720px){
       tbody tr{
         grid-template-columns: 1fr;
@@ -204,7 +274,6 @@
       tbody td:first-child{ border-top: none; }
     }
 
-    /* Status bem pequeno embaixo */
     .footerStatus{
       width: 100%;
       text-align: center;
@@ -218,20 +287,19 @@
 </head>
 
 <body>
+  <!-- ✅ Grain -->
+  <div class="grain" aria-hidden="true"></div>
+
   <div class="wrap">
 
-    <!-- ✅ Logo acima de tudo -->
     <div class="logoBox">
-      <img src="logo-senac.png" alt="Senac" />
+      <img src="logo-senac.svg" alt="Senac" />
     </div>
 
-    <!-- ✅ Título + período + dia centralizados -->
     <div class="topbar">
       <h1>Salas de Aula</h1>
       <div class="period" id="periodLabel">—</div>
       <div class="date" id="dateLabel">—</div>
-
-      <!-- ✅ Relógio abaixo do dia -->
       <div class="clock" id="clockLabel">--:--:--</div>
     </div>
 
@@ -241,7 +309,6 @@
       <button class="btn" id="fsBtn">Tela cheia</button>
     </div>
 
-    <!-- ✅ Sem títulos de coluna -->
     <div class="panel">
       <table aria-label="Salas de aula">
         <tbody id="tbody">
@@ -250,30 +317,19 @@
       </table>
     </div>
 
-    <!-- ✅ Status abaixo de tudo -->
     <div class="footerStatus" id="smallStatus">—</div>
   </div>
 
 <script>
-  // ==============================
-  // CONFIG
-  // ==============================
   const TZ = "America/Sao_Paulo";
 
-  // ✅ Endpoint direto (atualiza melhor que pub?output=csv)
   const SHEET_CSV_BASE =
     "https://docs.google.com/spreadsheets/d/1L7Rf7ksHbH_L2-yjQl6kqg464j1aqNRdFOAPuLJNXm8/export?format=csv&gid=356224596";
 
-  // Atualização rápida (TV): 2000–5000ms costuma ser estável
   const POLL_MS = 3000;
-
-  // Range alvo A29:C48
   const START_ROW = 29;
   const END_ROW   = 48;
 
-  // ==============================
-  // ELEMENTOS
-  // ==============================
   const periodEl = document.getElementById("periodLabel");
   const dateEl = document.getElementById("dateLabel");
   const clockEl = document.getElementById("clockLabel");
@@ -285,9 +341,6 @@
 
   pollLabel.textContent = `${Math.round(POLL_MS/1000)}s`;
 
-  // ==============================
-  // TEMPO / RÓTULOS
-  // ==============================
   function nowInTZDate(){
     const parts = new Intl.DateTimeFormat("en-US", {
       timeZone: TZ, year:"numeric", month:"2-digit", day:"2-digit",
@@ -305,27 +358,21 @@
   }
 
   function formatPtBrLongDate(date){
-    // "segunda-feira, 16 de fevereiro de 2026"
     return new Intl.DateTimeFormat("pt-BR", {
       timeZone: TZ, weekday:"long", day:"numeric", month:"long", year:"numeric"
     }).format(date);
   }
 
-  function pad2(n){ return String(n).padStart(2, "0"); }
-
-  // Relógio em tempo real (melhor esforço)
-  // - Tenta usar um "offset de rede" (sincronizado quando conseguirmos inferir)
-  // - Se não der, segue o horário local com timezone configurado
-  let networkOffsetMs = 0;
-
-  function setHeaderClock(){
+  function setHeaderLabels(){
     const tzNow = nowInTZDate();
     periodEl.textContent = getPeriodLabel(tzNow);
     dateEl.textContent = formatPtBrLongDate(tzNow);
   }
 
+  // Relógio em tempo real (melhor esforço com offset via header Date quando disponível)
+  let networkOffsetMs = 0;
+
   function renderClock(){
-    // usa Date.now() + offset e aplica timezone
     const adjusted = new Date(Date.now() + networkOffsetMs);
     const parts = new Intl.DateTimeFormat("en-US", {
       timeZone: TZ, hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false
@@ -334,9 +381,6 @@
     clockEl.textContent = `${get("hour")}:${get("minute")}:${get("second")}`;
   }
 
-  // ==============================
-  // CSV (parser simples com aspas)
-  // ==============================
   function parseCSV(text){
     const rows = [];
     let row = [], cell = "", inQuotes = false;
@@ -366,9 +410,6 @@
       .replaceAll('"',"&quot;").replaceAll("'","&#039;");
   }
 
-  // ==============================
-  // RENDER (somente linhas preenchidas)
-  // ==============================
   let lastDataKey = null;
 
   function render(rowsABC){
@@ -404,40 +445,29 @@
     smallStatus.innerHTML = `<span class="${cls}">${escapeHtml(msg)}</span>`;
   }
 
-  // ==============================
-  // LOOP DE ATUALIZAÇÃO (com backoff)
-  // ==============================
   let timer = null;
   let backoff = POLL_MS;
 
   async function tick(){
     try{
-      setHeaderClock();
+      setHeaderLabels();
 
-      // cache-buster real
       const url = `${SHEET_CSV_BASE}&_cb=${Date.now()}`;
-
       const res = await fetch(url, {
         cache: "no-store",
         headers: { "Pragma": "no-cache", "Cache-Control": "no-cache" }
       });
-
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-      // Melhor esforço: sincronizar "tempo de rede" via cabeçalho Date (se exposto)
-      // (se não vier, seguimos com offset 0)
       const dateHeader = res.headers.get("Date");
       if (dateHeader) {
         const serverMs = new Date(dateHeader).getTime();
-        if (!Number.isNaN(serverMs)) {
-          networkOffsetMs = serverMs - Date.now();
-        }
+        if (!Number.isNaN(serverMs)) networkOffsetMs = serverMs - Date.now();
       }
 
       const csv = await res.text();
       const all = parseCSV(csv);
 
-      // A29 => índice 28 (0-based). A48 => índice 47.
       const startIdx = START_ROW - 1;
       const endIdx = END_ROW - 1;
 
@@ -451,8 +481,8 @@
 
       const tzNow = nowInTZDate();
       lastLabel.textContent = tzNow.toLocaleTimeString("pt-BR", { timeZone: TZ });
-
       setSmallStatus("ok", "Online · Dados atualizados");
+
       backoff = POLL_MS;
     } catch (e){
       setSmallStatus("bad", "Falha ao atualizar · Tentando reconectar");
@@ -463,9 +493,6 @@
     }
   }
 
-  // ==============================
-  // FULLSCREEN (TV)
-  // ==============================
   function isFullscreen(){ return !!document.fullscreenElement; }
   async function toggleFullscreen(){
     try{
@@ -478,11 +505,10 @@
     fsBtn.textContent = isFullscreen() ? "Sair da tela cheia" : "Tela cheia";
   });
 
-  // Start
-  setHeaderClock();
+  setHeaderLabels();
   renderClock();
-  setInterval(setHeaderClock, 10000);
-  setInterval(renderClock, 250); // fluido para TV
+  setInterval(setHeaderLabels, 10000);
+  setInterval(renderClock, 250);
   tick();
 </script>
 </body>
