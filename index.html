@@ -7,20 +7,23 @@
 
   <style>
     :root{
-      --bg: #4D2F40;
-      --panel: #004A8D;
-      --panel2: #005692;
+      /* ✅ Fundo solicitado */
+      --bg: #004A8D;
 
-      --text: #ffffff;
+      /* Paleta elegante */
+      --text: rgba(255,255,255,.96);
       --muted: rgba(255,255,255,.78);
       --line: rgba(255,255,255,.14);
 
-      --accent: #F7941D;
-      --accentSoft: #FDC180;
-      --info: #79CEDC;
+      --card: rgba(255,255,255,.10);
+      --card2: rgba(255,255,255,.07);
+      --glass: rgba(255,255,255,.08);
+
+      --accent: rgba(247,148,30,.95);  /* detalhe (laranja Senac) */
+      --ok: rgba(121,206,220,.95);     /* feedback */
 
       --radius: 18px;
-      --shadow: 0 14px 40px rgba(0,0,0,.35);
+      --shadow: 0 14px 40px rgba(0,0,0,.25);
     }
 
     *{ box-sizing:border-box; }
@@ -35,7 +38,7 @@
       position: relative;
     }
 
-    /* ===== FUNDO COM VÍDEO + TINT (mescla com as cores) ===== */
+    /* ===== FUNDO COM VÍDEO (bem sutil) ===== */
     .bgVideo{
       position: fixed;
       inset: 0;
@@ -43,54 +46,48 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transform: scale(1.03); /* evita bordas em TVs */
-      filter: saturate(1.05) contrast(1.05);
-      opacity: .55; /* força a mistura com o tema */
+      transform: scale(1.05);
+      opacity: .20;                  /* mais discreto */
+      filter: saturate(1.05) contrast(1.05) brightness(.95);
       pointer-events: none;
     }
 
-    /* Camada de cor por cima do vídeo (o “blend” Senac) */
+    /* “Tinta” por cima do vídeo, mantendo o azul do fundo */
     .bgTint{
       position: fixed;
       inset: -20%;
       z-index: -5;
       pointer-events: none;
       background:
-        radial-gradient(1200px 650px at 15% 10%, rgba(121,206,220,.35), transparent 60%),
-        radial-gradient(950px 520px at 85% 18%, rgba(247,148,30,.28), transparent 60%),
-        radial-gradient(900px 700px at 50% 90%, rgba(0,86,146,.26), transparent 65%),
-        linear-gradient(180deg, rgba(0,74,141,.25), rgba(0,74,141,0) 60%),
-        rgba(77,47,64,.35);
+        radial-gradient(1100px 650px at 18% 12%, rgba(255,255,255,.10), transparent 60%),
+        radial-gradient(950px 520px at 82% 20%, rgba(247,148,30,.10), transparent 60%),
+        radial-gradient(900px 700px at 50% 95%, rgba(121,206,220,.10), transparent 65%),
+        linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,0) 55%);
       mix-blend-mode: overlay;
-      filter: blur(10px) saturate(1.15);
-    }
-
-    /* Movimento suave no “tint” (sem mexer no layout) */
-    .bgTint{
-      animation: bgFloat 18s ease-in-out infinite;
+      filter: blur(10px) saturate(1.05);
+      animation: bgFloat 22s ease-in-out infinite;
       transform: translate3d(0,0,0);
     }
+
     @keyframes bgFloat{
       0%   { transform: translate3d(0,0,0) scale(1); }
-      25%  { transform: translate3d(-2.0%, -1.2%, 0) scale(1.03); }
-      50%  { transform: translate3d(1.6%, 1.0%, 0) scale(1.05); }
-      75%  { transform: translate3d(0.8%, -1.8%, 0) scale(1.03); }
+      50%  { transform: translate3d(1.4%, -1.2%, 0) scale(1.04); }
       100% { transform: translate3d(0,0,0) scale(1); }
     }
 
-    /* Grain sutil por cima */
+    /* Grain bem leve */
     .grain{
       position: fixed;
       inset: -30%;
       z-index: -4;
       pointer-events: none;
-      opacity: .08;          /* ajuste fino: 0.06–0.12 */
+      opacity: .06;
       mix-blend-mode: overlay;
       background-image:
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
       background-size: 260px 260px;
-      animation: grainMove 9s steps(10) infinite;
-      filter: contrast(115%) brightness(105%);
+      animation: grainMove 10s steps(10) infinite;
+      filter: contrast(115%) brightness(110%);
     }
     @keyframes grainMove{
       0%{ transform: translate3d(0,0,0) scale(1); }
@@ -127,7 +124,7 @@
       width: clamp(120px, 18vw, 210px);
       height: auto;
       display: block;
-      filter: drop-shadow(0 10px 20px rgba(0,0,0,.25));
+      filter: drop-shadow(0 12px 20px rgba(0,0,0,.25));
       user-select: none;
       -webkit-user-drag: none;
     }
@@ -137,9 +134,9 @@
       padding: 20px 18px 18px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,0));
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,0));
       box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
       text-align: center;
     }
 
@@ -155,7 +152,7 @@
       font-size: clamp(18px, 2.2vw, 28px);
       font-weight: 900;
       letter-spacing: .01em;
-      color: var(--accentSoft);
+      color: rgba(255,255,255,.90);
     }
 
     .date{
@@ -186,102 +183,132 @@
       align-items:center;
       gap: 8px;
       padding: 8px 12px;
-      border: 1px solid var(--line);
+      border: 1px solid rgba(255,255,255,.16);
       border-radius: 999px;
-      background: rgba(0,74,141,.22);
+      background: rgba(255,255,255,.08);
       color: var(--text);
       font-weight: 750;
       font-size: 13px;
       user-select:none;
       white-space:nowrap;
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(10px);
     }
-    .chip small{ color: rgba(255,255,255,.72); font-weight:650; }
+    .chip small{ color: rgba(255,255,255,.70); font-weight:650; }
 
     .btn{
       cursor:pointer;
-      border: 1px solid rgba(247,148,30,.55);
-      background: linear-gradient(180deg, rgba(247,148,30,.95), rgba(247,148,30,.70));
-      color: #1b0f17;
+      border: 1px solid rgba(255,255,255,.22);
+      background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.06));
+      color: rgba(255,255,255,.92);
       padding: 10px 14px;
       border-radius: 12px;
-      font-weight: 950;
+      font-weight: 900;
       font-size: 13px;
       letter-spacing:.01em;
-      transition: transform .08s ease, filter .12s ease;
+      transition: transform .08s ease, filter .12s ease, border-color .12s ease;
+      backdrop-filter: blur(10px);
     }
-    .btn:hover{ filter: brightness(1.06); }
+    .btn:hover{ filter: brightness(1.05); border-color: rgba(255,255,255,.30); }
     .btn:active{ transform: translateY(1px); }
 
-    .panel{
+    /* ===== LISTA MODERNA (sem cara de planilha) ===== */
+    .list{
       width: 100%;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      background: linear-gradient(180deg, rgba(0,74,141,.50), rgba(0,86,146,.28));
-      backdrop-filter: blur(12px);
-    }
-
-    table{ width:100%; border-collapse: collapse; }
-    thead{ display:none; }
-
-    tbody tr{
       display: grid;
-      grid-template-columns: 1.4fr 1fr 1fr;
-      border-bottom: 1px solid var(--line);
+      gap: 10px;                 /* ✅ espaço entre “linhas” */
     }
-    tbody tr:last-child{ border-bottom: none; }
 
-    tbody td{
+    .rowCard{
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+      box-shadow: 0 12px 28px rgba(0,0,0,.18);
+      backdrop-filter: blur(12px);
       padding: 14px 14px;
-      font-size: clamp(14px, 1.7vw, 20px);
+      display: grid;
+      grid-template-columns: 1.6fr 1.2fr .8fr; /* Turma | Sala/Lab | Nº */
+      align-items: center;
+      gap: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* detalhe “premium” na lateral (bem sutil) */
+    .rowCard::before{
+      content:"";
+      position:absolute;
+      inset: 0;
+      width: 6px;
+      background: linear-gradient(180deg, rgba(247,148,30,.80), rgba(247,148,30,0));
+      opacity: .55;
+    }
+
+    .cell{
       text-align: center;
-      color: rgba(255,255,255,.95);
+      font-size: clamp(14px, 1.7vw, 20px);
+      color: rgba(255,255,255,.96);
       word-break: break-word;
     }
 
-    tbody tr:nth-child(2n){
-      background: rgba(255,255,255,.05);
+    .cell.turma{
+      text-align: left;
+      font-weight: 900;
+      letter-spacing: .01em;
+      padding-left: 8px; /* por causa da barrinha lateral */
+    }
+    .cell.sala{
+      font-weight: 800;
+      color: rgba(255,255,255,.92);
+    }
+    .cell.num{
+      font-weight: 950;
+      letter-spacing: .08em;
     }
 
-    .changed{ background: rgba(121,206,220,.20) !important; }
+    /* Highlight quando atualizar */
+    .rowCard.changed{
+      outline: 2px solid rgba(121,206,220,.45);
+      background: linear-gradient(180deg, rgba(121,206,220,.14), rgba(255,255,255,.06));
+    }
 
     .empty{
+      width: 100%;
+      border: 1px dashed rgba(255,255,255,.22);
+      border-radius: 16px;
       padding: 18px 16px;
-      color: rgba(255,255,255,.80);
+      color: rgba(255,255,255,.85);
       text-align: center;
+      background: rgba(255,255,255,.06);
+      backdrop-filter: blur(10px);
     }
 
     @media (max-width: 720px){
-      tbody tr{ grid-template-columns: 1fr; padding: 10px 8px; }
-      tbody td{
-        padding: 10px 10px;
-        border-top: 1px dashed rgba(255,255,255,.14);
+      .rowCard{
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 8px;
       }
-      tbody td:first-child{ border-top: none; }
+      .cell.turma{ text-align: center; padding-left: 0; }
+      .rowCard::before{ width: 0; } /* no mobile fica mais clean */
     }
 
     .footerStatus{
       width: 100%;
       text-align: center;
-      color: rgba(255,255,255,.55);
+      color: rgba(255,255,255,.60);
       font-size: 12px;
       padding: 6px 2px 2px;
     }
-    .footerStatus .ok{ color: rgba(121,206,220,.95); }
+    .footerStatus .ok{ color: var(--ok); }
     .footerStatus .bad{ color: rgba(255,107,107,.95); }
   </style>
 </head>
 
 <body>
-  <!-- ✅ VÍDEO DE FUNDO (suba bg.mp4 no repo) -->
+  <!-- Vídeo (suba bg.mp4) -->
   <video class="bgVideo" autoplay muted loop playsinline preload="auto">
     <source src="bg.mp4" type="video/mp4" />
-    <!-- opcional: <source src="bg.webm" type="video/webm" /> -->
   </video>
-
-  <!-- ✅ Tint + Grain -->
   <div class="bgTint" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
 
@@ -303,12 +330,9 @@
       <button class="btn" id="fsBtn">Tela cheia</button>
     </div>
 
-    <div class="panel">
-      <table aria-label="Salas de aula">
-        <tbody id="tbody">
-          <tr><td class="empty">Carregando dados…</td></tr>
-        </tbody>
-      </table>
+    <!-- ✅ lista moderna -->
+    <div class="list" id="list">
+      <div class="empty">Carregando dados…</div>
     </div>
 
     <div class="footerStatus" id="smallStatus">—</div>
@@ -321,14 +345,14 @@
     "https://docs.google.com/spreadsheets/d/1L7Rf7ksHbH_L2-yjQl6kqg464j1aqNRdFOAPuLJNXm8/export?format=csv&gid=356224596";
 
   const POLL_MS = 3000;
-  const FETCH_TIMEOUT_MS = 8000; // ✅ evita travar o loop
+  const FETCH_TIMEOUT_MS = 8000;
   const START_ROW = 29;
   const END_ROW   = 48;
 
   const periodEl = document.getElementById("periodLabel");
   const dateEl = document.getElementById("dateLabel");
   const clockEl = document.getElementById("clockLabel");
-  const tbody = document.getElementById("tbody");
+  const listEl = document.getElementById("list");
   const lastLabel = document.getElementById("lastLabel");
   const pollLabel = document.getElementById("pollLabel");
   const fsBtn = document.getElementById("fsBtn");
@@ -364,7 +388,7 @@
     dateEl.textContent = formatPtBrLongDate(tzNow);
   }
 
-  // Relógio (melhor esforço com offset via header Date quando disponível)
+  // relógio em tempo real (offset via Date header quando disponível)
   let networkOffsetMs = 0;
   function renderClock(){
     const adjusted = new Date(Date.now() + networkOffsetMs);
@@ -404,13 +428,16 @@
       .replaceAll('"',"&quot;").replaceAll("'","&#039;");
   }
 
+  // Render “cards” mantendo A|B|C
   let lastDataKey = null;
 
-  function render(rowsABC){
-    const nonEmpty = rowsABC.filter(r => ((r[0]||"") + (r[1]||"") + (r[2]||"")).trim() !== "");
+  function renderCards(rowsABC){
+    const nonEmpty = rowsABC
+      .map(r => [ (r[0]??"").trim(), (r[1]??"").trim(), (r[2]??"").trim() ])
+      .filter(r => (r[0] + r[1] + r[2]).trim() !== "");
 
     if (!nonEmpty.length){
-      tbody.innerHTML = `<tr><td class="empty">Sem dados em A${START_ROW}:C${END_ROW}.</td></tr>`;
+      listEl.innerHTML = `<div class="empty">Sem dados em A${START_ROW}:C${END_ROW}.</div>`;
       return;
     }
 
@@ -418,18 +445,21 @@
     const changed = (lastDataKey !== null && dataKey !== lastDataKey);
     lastDataKey = dataKey;
 
-    tbody.innerHTML = nonEmpty.map(r => {
-      return `<tr>
-        <td>${escapeHtml(r[0])}</td>
-        <td>${escapeHtml(r[1])}</td>
-        <td>${escapeHtml(r[2])}</td>
-      </tr>`;
+    // cria cards
+    listEl.innerHTML = nonEmpty.map(r => {
+      return `
+        <div class="rowCard">
+          <div class="cell turma">${escapeHtml(r[0])}</div>
+          <div class="cell sala">${escapeHtml(r[1])}</div>
+          <div class="cell num">${escapeHtml(r[2])}</div>
+        </div>
+      `;
     }).join("");
 
     if (changed){
-      [...tbody.querySelectorAll("tr")].forEach(tr => tr.classList.add("changed"));
+      [...listEl.querySelectorAll(".rowCard")].forEach(card => card.classList.add("changed"));
       setTimeout(() => {
-        [...tbody.querySelectorAll("tr")].forEach(tr => tr.classList.remove("changed"));
+        [...listEl.querySelectorAll(".rowCard")].forEach(card => card.classList.remove("changed"));
       }, 900);
     }
   }
@@ -439,7 +469,6 @@
     smallStatus.innerHTML = `<span class="${cls}">${escapeHtml(msg)}</span>`;
   }
 
-  // ✅ Fetch com timeout (não deixa o loop travar)
   async function fetchWithTimeout(url, timeoutMs){
     const controller = new AbortController();
     const t = setTimeout(() => controller.abort(), timeoutMs);
@@ -477,13 +506,8 @@
       const startIdx = START_ROW - 1;
       const endIdx = END_ROW - 1;
 
-      const slice = all.slice(startIdx, endIdx + 1).map(r => [
-        (r[0] ?? "").trim(),
-        (r[1] ?? "").trim(),
-        (r[2] ?? "").trim(),
-      ]);
-
-      render(slice);
+      const slice = all.slice(startIdx, endIdx + 1).map(r => [r[0], r[1], r[2]]);
+      renderCards(slice);
 
       const tzNow = nowInTZDate();
       lastLabel.textContent = tzNow.toLocaleTimeString("pt-BR", { timeZone: TZ });
@@ -499,7 +523,6 @@
     }
   }
 
-  // ✅ Reforços: quando volta internet / foco / visibilidade, força atualizar
   function forceRefresh(){
     backoff = POLL_MS;
     clearTimeout(timer);
@@ -511,7 +534,6 @@
     if (!document.hidden) forceRefresh();
   });
 
-  // Fullscreen (TV)
   function isFullscreen(){ return !!document.fullscreenElement; }
   async function toggleFullscreen(){
     try{
@@ -524,7 +546,6 @@
     fsBtn.textContent = isFullscreen() ? "Sair da tela cheia" : "Tela cheia";
   });
 
-  // Start
   setHeaderLabels();
   renderClock();
   setInterval(setHeaderLabels, 10000);
