@@ -7,7 +7,6 @@
 
   <style>
     :root{
-      /* paleta */
       --bg: #000C2E;
       --title: #E3AD24;
       --blue: #46598E;
@@ -16,7 +15,6 @@
       --white: #FFFFFF;
 
       --text: rgba(255,255,255,.96);
-      --muted: rgba(255,255,255,.78);
 
       --cardTop: rgba(255,255,255,.10);
       --cardBot: rgba(255,255,255,.05);
@@ -29,16 +27,8 @@
 
       --tintOpacity: 1;
 
-      /* ✅ escalas dinâmicas (cabem mais linhas quando necessário) */
-      --lineGap: 10px;
-      --cardPadY: 14px;
-      --cardPadX: 14px;
-      --fontCell: clamp(12px, 1.25vw, 20px);
-      --fontPill: clamp(12px, 1.1vw, 16px);
-      --fontPeriod: clamp(16px, 1.6vw, 26px);
-      --fontDate: clamp(12px, 1.2vw, 18px);
-      --fontClock: clamp(18px, 1.8vw, 30px);
-      --fontTitle: clamp(34px, 4.2vw, 72px);
+      /* ✅ escala global calculada via JS */
+      --scale: 1;
     }
 
     *{ box-sizing:border-box; }
@@ -47,9 +37,10 @@
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color: var(--text);
-      min-height: 100vh;
+      height: 100vh;
+      width: 100vw;
       background: var(--bg);
-      overflow: hidden; /* ✅ evita scroll: tudo precisa caber */
+      overflow: hidden;
       position: relative;
     }
 
@@ -114,62 +105,44 @@
     @media (prefers-reduced-motion: reduce){
       .bgTint, .grain, .pill .sheen, .dot{ animation: none !important; }
       .pill .sheen{ opacity: 0; }
-      .wrapMotion{ transform: none !important; }
-      .rowCard{ transition: none !important; }
       .topbar{ animation: none !important; }
     }
 
-    /* ===== CONTEÚDO ===== */
+    /* ===== STAGE + SCALE (proporcional) ===== */
+    .stage{
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
     .wrapMotion{
       transform: translate3d(var(--boX), var(--boY), 0);
       transition: transform 900ms ease;
       will-change: transform;
-      height: 100vh;
-      width: 100vw;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ✅ scaler: mantém proporções do layout inteiro */
+    .scaler{
+      width: min(1280px, 100vw);
+      transform-origin: top center;
+      transform: scale(var(--scale));
+      will-change: transform;
     }
 
     .wrap{
-      max-width: 1280px;
-      height: 100%;
-      margin: 0 auto;
-
-      /* ✅ subiu todo o layout (sem logo) e preenche melhor */
-      padding: clamp(10px, 1.6vw, 18px);
-
+      width: 100%;
+      padding: 10px 14px;          /* ✅ menor padding: usa mais tela */
+      height: auto;
       display: grid;
-      grid-template-rows: auto 1fr auto;
+      grid-template-rows: auto 1fr auto;  /* ✅ removeu a linha do botão */
       gap: 10px;
       align-content: start;
     }
-
-    /* topo: fullscreen à direita */
-    .topActions{
-      width: 100%;
-      display:flex;
-      justify-content: flex-end;
-      align-items: center;
-      padding-top: 2px;
-    }
-
-    .btn{
-      cursor:pointer;
-      border: 1px solid rgba(255,255,255,.20);
-      background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
-      color: rgba(255,255,255,.92);
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-weight: 900;
-      font-size: 13px;
-      letter-spacing:.01em;
-      transition: transform .08s ease, filter .12s ease, border-color .12s ease;
-      backdrop-filter: blur(10px);
-      user-select: none;
-    }
-    .btn:hover{
-      filter: brightness(1.06);
-      border-color: rgba(227,173,36,.45);
-    }
-    .btn:active{ transform: translateY(1px); }
 
     .topbar{
       width: 100%;
@@ -180,7 +153,6 @@
       box-shadow: var(--shadow);
       backdrop-filter: blur(12px);
       text-align: center;
-
       animation: headerBreath 8.5s ease-in-out infinite;
       transform-origin: center;
     }
@@ -191,42 +163,37 @@
 
     h1{
       margin: 0;
-      font-size: var(--fontTitle);
+      font-size: clamp(34px, 4.2vw, 72px);
       letter-spacing: -0.02em;
       line-height: 1;
       color: var(--title);
       text-shadow: 0 12px 34px rgba(0,0,0,.32);
       font-family: "Georgia", "Times New Roman", serif;
     }
-
     .period{
       margin-top: 8px;
-      font-size: var(--fontPeriod);
+      font-size: clamp(16px, 1.6vw, 26px);
       font-weight: 900;
       letter-spacing: .01em;
       color: rgba(255,255,255,.92);
     }
-
     .date{
       margin-top: 2px;
-      font-size: var(--fontDate);
+      font-size: clamp(12px, 1.2vw, 18px);
       color: rgba(255,255,255,.78);
     }
-
     .clock{
       margin-top: 6px;
-      font-size: var(--fontClock);
+      font-size: clamp(18px, 1.8vw, 30px);
       font-weight: 950;
       letter-spacing: .08em;
       color: rgba(255,255,255,.92);
     }
 
-    /* ===== LISTA: ocupa tudo que sobrar e SEM SCROLL ===== */
     .list{
       width: 100%;
-      height: 100%;
       display: grid;
-      gap: var(--lineGap);
+      gap: 10px;
       align-content: start;
       overflow: hidden;
       padding: 2px 0;
@@ -241,7 +208,7 @@
         0 6px 14px rgba(0,0,0,.18);
       backdrop-filter: blur(12px);
 
-      padding: var(--cardPadY) var(--cardPadX);
+      padding: 14px 14px;
       display: grid;
       grid-template-columns: 1.6fr 1.2fr auto;
       align-items: center;
@@ -249,10 +216,8 @@
       overflow: hidden;
       position: relative;
 
-      transform: translateY(0);
-      transition: transform .18s ease, background .18s ease, outline-color .18s ease, border-color .18s ease;
+      transition: transform .18s ease, background .18s ease, outline-color .18s ease;
       will-change: transform;
-      min-height: 0; /* ajuda em grids responsivos */
     }
 
     .rowCard.enter{ animation: cardIn .22s ease-out both; }
@@ -271,26 +236,23 @@
     }
 
     .cell{
-      font-size: var(--fontCell);
+      font-size: clamp(12px, 1.25vw, 20px);
       color: rgba(255,255,255,.96);
       word-break: break-word;
       line-height: 1.2;
     }
-
     .cell.turma{
       text-align: left;
       font-weight: 900;
       letter-spacing: .01em;
       padding-left: 8px;
     }
-
     .cell.sala{
       text-align: center;
       font-weight: 800;
       color: rgba(255,255,255,.92);
       position: relative;
     }
-
     @media (min-width: 721px){
       .cell.sala::before{
         content:"";
@@ -320,11 +282,10 @@
 
       color: #FFFFFF;
       font-weight: 950;
-      font-size: var(--fontPill);
+      font-size: clamp(12px, 1.1vw, 16px);
       letter-spacing: .10em;
       text-align: center;
       backdrop-filter: blur(10px);
-
       box-shadow:
         0 14px 26px rgba(0,0,0,.24),
         inset 0 1px 0 rgba(255,255,255,.18),
@@ -338,18 +299,6 @@
       border-radius: 999px;
       background: linear-gradient(180deg, rgba(227,173,36,.20), transparent 55%);
       opacity: .85;
-      pointer-events:none;
-    }
-
-    .pill::after{
-      content:"";
-      position:absolute;
-      inset: -2px;
-      border-radius: 999px;
-      background: radial-gradient(60% 120% at 50% 0%, rgba(227,173,36,.26), transparent 70%);
-      filter: blur(6px);
-      opacity: .9;
-      z-index: -1;
       pointer-events:none;
     }
 
@@ -371,7 +320,6 @@
       animation: pillSheen 8.8s ease-in-out infinite;
       filter: blur(0.5px);
     }
-
     @keyframes pillSheen{
       0%   { transform: translateX(-70%); opacity: 0; }
       20%  { opacity: .45; }
@@ -416,14 +364,12 @@
       gap: 10px;
       padding: 4px 2px 2px;
     }
-
     .lastUpdate{
       color: rgba(255,255,255,.65);
       font-size: 12px;
       text-align: left;
       white-space: nowrap;
     }
-
     .status{
       color: rgba(255,255,255,.52);
       font-size: 12px;
@@ -466,26 +412,26 @@
   <div class="bgTint" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
 
-  <div class="wrapMotion">
-    <div class="wrap">
-      <div class="topActions">
-        <button class="btn" id="fsBtn">Tela cheia</button>
-      </div>
+  <div class="stage">
+    <div class="wrapMotion">
+      <div class="scaler" id="scaler">
+        <div class="wrap">
+          <div class="topbar">
+            <h1>Salas de Aula</h1>
+            <div class="period" id="periodLabel">—</div>
+            <div class="date" id="dateLabel">—</div>
+            <div class="clock" id="clockLabel">--:--:--</div>
+          </div>
 
-      <div class="topbar">
-        <h1>Salas de Aula</h1>
-        <div class="period" id="periodLabel">—</div>
-        <div class="date" id="dateLabel">—</div>
-        <div class="clock" id="clockLabel">--:--:--</div>
-      </div>
+          <div class="list" id="list">
+            <div class="empty">Carregando dados…</div>
+          </div>
 
-      <div class="list" id="list">
-        <div class="empty">Carregando dados…</div>
-      </div>
-
-      <div class="footerBar">
-        <div class="lastUpdate" id="lastUpdateLabel">Última atualização: —</div>
-        <div class="status" id="statusLabel">—</div>
+          <div class="footerBar">
+            <div class="lastUpdate" id="lastUpdateLabel">Última atualização: —</div>
+            <div class="status" id="statusLabel">—</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -507,23 +453,10 @@
   const listEl = document.getElementById("list");
   const lastUpdateLabel = document.getElementById("lastUpdateLabel");
   const statusLabel = document.getElementById("statusLabel");
-  const fsBtn = document.getElementById("fsBtn");
   const bgVideo = document.getElementById("bgVideo");
+  const scaler = document.getElementById("scaler");
 
-  // ===== fullscreen
-  function isFullscreen(){ return !!document.fullscreenElement; }
-  async function toggleFullscreen(){
-    try{
-      if (!isFullscreen()) await document.documentElement.requestFullscreen();
-      else await document.exitFullscreen();
-    } catch {}
-  }
-  fsBtn.addEventListener("click", toggleFullscreen);
-  document.addEventListener("fullscreenchange", () => {
-    fsBtn.textContent = isFullscreen() ? "Sair da tela cheia" : "Tela cheia";
-  });
-
-  // ===== fallback vídeo
+  // fallback vídeo
   let videoDisabled = false;
   function disableVideoFallback(reason){
     if (videoDisabled) return;
@@ -545,7 +478,7 @@
     }
   })();
 
-  // ===== anti burn-in
+  // anti burn-in
   function rand(min, max){ return Math.random() * (max - min) + min; }
   function applyBurnInOffset(){
     const x = Math.round(rand(-2, 2));
@@ -556,7 +489,7 @@
   applyBurnInOffset();
   setInterval(applyBurnInOffset, 3 * 60 * 1000);
 
-  // ===== data/hora
+  // date/time
   function nowInTZDate(){
     const parts = new Intl.DateTimeFormat("en-US", {
       timeZone: TZ, year:"numeric", month:"2-digit", day:"2-digit",
@@ -600,7 +533,7 @@
     return date.toLocaleTimeString("pt-BR", { timeZone: TZ, hour12: false });
   }
 
-  // ===== CSV
+  // CSV
   function parseCSV(text){
     const rows = [];
     let row = [], cell = "", inQuotes = false;
@@ -622,7 +555,29 @@
       .replaceAll('"',"&quot;").replaceAll("'","&#039;");
   }
 
-  // ===== diff DOM
+  // ✅ scale global: mantém proporção e usa o máximo da tela
+  function fitToScreen(){
+    document.documentElement.style.setProperty("--scale", "1");
+    requestAnimationFrame(() => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      const rect = scaler.getBoundingClientRect();
+      const naturalW = rect.width;
+      const naturalH = scaler.scrollHeight;
+
+      // ✅ margem menor para ocupar mais tela
+      const pad = 2;
+
+      const scaleW = (vw - pad) / naturalW;
+      const scaleH = (vh - pad) / naturalH;
+
+      const scale = Math.min(1, scaleW, scaleH);
+      document.documentElement.style.setProperty("--scale", String(scale));
+    });
+  }
+
+  // diff DOM
   const rowMap = new Map();
 
   function makeCard(rowIndex, a, b, c){
@@ -663,46 +618,6 @@
     if (currentText !== (c || "").trim()){
       nodes.pill.innerHTML = `<span class="sheen"></span>${escapeHtml(c)}`;
     }
-  }
-
-  /* ✅ AUTOFIT: ajusta tamanhos para caber TODAS as linhas sem zoom */
-  function applyAutoFit(){
-    const n = listEl.querySelectorAll(".rowCard").length;
-    // valores base
-    let lineGap = 10, padY = 14, padX = 14;
-    let cellMin = 12, cellMax = 20;
-    let pillMin = 12, pillMax = 16;
-
-    // quanto mais linhas, mais compacto (sem ficar feio)
-    if (n >= 14){ lineGap = 8; padY = 12; cellMax = 18; }
-    if (n >= 18){ lineGap = 6; padY = 10; cellMax = 16; pillMax = 15; }
-    if (n >= 22){ lineGap = 5; padY = 9;  cellMax = 15; pillMax = 14; }
-    if (n >= 26){ lineGap = 4; padY = 8;  cellMax = 14; pillMax = 13; }
-
-    // aplica nas CSS vars
-    const r = document.documentElement.style;
-    r.setProperty("--lineGap", `${lineGap}px`);
-    r.setProperty("--cardPadY", `${padY}px`);
-    r.setProperty("--cardPadX", `${padX}px`);
-    r.setProperty("--fontCell", `clamp(${cellMin}px, 1.25vw, ${cellMax}px)`);
-    r.setProperty("--fontPill", `clamp(${pillMin}px, 1.1vw, ${pillMax}px)`);
-
-    // agora garante que não estourou altura: se estourar, compacta mais
-    requestAnimationFrame(() => {
-      const listRect = listEl.getBoundingClientRect();
-      const last = listEl.lastElementChild;
-      if (!last || !last.classList.contains("rowCard")) return;
-      const lastRect = last.getBoundingClientRect();
-      const overflow = lastRect.bottom - listRect.bottom;
-
-      if (overflow > 0){
-        // compactação final (um passo)
-        r.setProperty("--lineGap", `${Math.max(3, lineGap - 2)}px`);
-        r.setProperty("--cardPadY", `${Math.max(7, padY - 2)}px`);
-        r.setProperty("--fontCell", `clamp(11px, 1.1vw, ${Math.max(13, cellMax - 2)}px)`);
-        r.setProperty("--fontPill", `clamp(11px, 1.0vw, ${Math.max(12, pillMax - 2)}px)`);
-      }
-    });
   }
 
   function renderOrUpdate(rowsABC){
@@ -747,11 +662,9 @@
 
     if (rowMap.size === 0){
       listEl.innerHTML = `<div class="empty">Sem dados em A${START_ROW}:C${END_ROW}.</div>`;
-      applyAutoFit();
-      return;
     }
 
-    applyAutoFit();
+    fitToScreen();
   }
 
   function setStatus(kind, msg){
@@ -795,16 +708,11 @@
 
       const csv = await res.text();
       const all = parseCSV(csv);
-
-      const startIdx = START_ROW - 1;
-      const endIdx = END_ROW - 1;
-
-      const slice = all.slice(startIdx, endIdx + 1).map(r => [r[0], r[1], r[2]]);
+      const slice = all.slice(START_ROW - 1, END_ROW).map(r => [r[0], r[1], r[2]]);
       renderOrUpdate(slice);
 
       const tzNow = nowInTZDate();
       lastUpdateLabel.textContent = `Última atualização: ${formatTimeOnly(tzNow)}`;
-
       setStatus("ok", "Online · Dados atualizados");
       backoff = POLL_MS;
     } catch (e){
@@ -823,16 +731,15 @@
   }
   window.addEventListener("online", forceRefresh);
   window.addEventListener("focus", forceRefresh);
-  document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) forceRefresh();
-  });
-  window.addEventListener("resize", () => applyAutoFit());
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) forceRefresh(); });
+  window.addEventListener("resize", () => fitToScreen());
 
   // init
   setHeaderLabels();
   renderClock();
   setInterval(setHeaderLabels, 10000);
   setInterval(renderClock, 250);
+  fitToScreen();
   tick();
 </script>
 </body>
