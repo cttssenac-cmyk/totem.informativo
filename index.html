@@ -7,32 +7,38 @@
 
   <style>
     :root{
-      /* ✅ NOVA PALETA (aplicada) */
-      --bg: #000C2E;         /* fundo */
-      --title: #E3AD24;      /* título */
-
-      --blue: #46598E;       /* azul apoio */
-      --bronzeDeep: #635A42; /* marrom/bronze profundo */
-      --goldMuted: #A38843;  /* dourado fosco */
+      /* paleta */
+      --bg: #000C2E;
+      --title: #E3AD24;
+      --blue: #46598E;
+      --bronzeDeep: #635A42;
+      --goldMuted: #A38843;
       --white: #FFFFFF;
 
       --text: rgba(255,255,255,.96);
       --muted: rgba(255,255,255,.78);
-      --line: rgba(255,255,255,.14);
 
-      /* cards */
       --cardTop: rgba(255,255,255,.10);
       --cardBot: rgba(255,255,255,.05);
 
       --radius: 18px;
       --shadow: 0 16px 44px rgba(0,0,0,.34);
 
-      /* burn-in offset */
       --boX: 0px;
       --boY: 0px;
 
-      /* tint strength (aumenta quando vídeo falha) */
       --tintOpacity: 1;
+
+      /* ✅ escalas dinâmicas (cabem mais linhas quando necessário) */
+      --lineGap: 10px;
+      --cardPadY: 14px;
+      --cardPadX: 14px;
+      --fontCell: clamp(12px, 1.25vw, 20px);
+      --fontPill: clamp(12px, 1.1vw, 16px);
+      --fontPeriod: clamp(16px, 1.6vw, 26px);
+      --fontDate: clamp(12px, 1.2vw, 18px);
+      --fontClock: clamp(18px, 1.8vw, 30px);
+      --fontTitle: clamp(34px, 4.2vw, 72px);
     }
 
     *{ box-sizing:border-box; }
@@ -43,7 +49,7 @@
       color: var(--text);
       min-height: 100vh;
       background: var(--bg);
-      overflow-x: hidden;
+      overflow: hidden; /* ✅ evita scroll: tudo precisa caber */
       position: relative;
     }
 
@@ -56,10 +62,7 @@
       height: 100%;
       object-fit: cover;
       transform: scale(1.05);
-
-      /* ✅ mais visível */
       opacity: .22;
-
       filter: saturate(1.06) contrast(1.06) brightness(.92);
       pointer-events: none;
     }
@@ -121,27 +124,31 @@
       transform: translate3d(var(--boX), var(--boY), 0);
       transition: transform 900ms ease;
       will-change: transform;
+      height: 100vh;
+      width: 100vw;
     }
 
     .wrap{
-      max-width: 1180px;
+      max-width: 1280px;
+      height: 100%;
       margin: 0 auto;
-      padding: clamp(14px, 2.5vw, 28px);
-      min-height: 100vh;
+
+      /* ✅ subiu todo o layout (sem logo) e preenche melhor */
+      padding: clamp(10px, 1.6vw, 18px);
+
       display: grid;
-      grid-template-rows: auto auto 1fr auto;
-      gap: 14px;
+      grid-template-rows: auto 1fr auto;
+      gap: 10px;
       align-content: start;
-      position: relative;
-      z-index: 0;
     }
 
+    /* topo: fullscreen à direita */
     .topActions{
       width: 100%;
       display:flex;
       justify-content: flex-end;
       align-items: center;
-      padding-top: 4px;
+      padding-top: 2px;
     }
 
     .btn{
@@ -156,6 +163,7 @@
       letter-spacing:.01em;
       transition: transform .08s ease, filter .12s ease, border-color .12s ease;
       backdrop-filter: blur(10px);
+      user-select: none;
     }
     .btn:hover{
       filter: brightness(1.06);
@@ -163,30 +171,16 @@
     }
     .btn:active{ transform: translateY(1px); }
 
-    .logoBox{
-      width: 100%;
-      display: grid;
-      place-items: center;
-      padding-top: 2px;
-    }
-    .logoBox img{
-      width: clamp(120px, 18vw, 210px);
-      height: auto;
-      display: block;
-      filter: drop-shadow(0 14px 24px rgba(0,0,0,.30));
-      user-select: none;
-      -webkit-user-drag: none;
-    }
-
     .topbar{
       width: 100%;
-      padding: 20px 18px 18px;
+      padding: 14px 16px 14px;
       border: 1px solid rgba(255,255,255,.13);
       border-radius: var(--radius);
       background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,0));
       box-shadow: var(--shadow);
       backdrop-filter: blur(12px);
       text-align: center;
+
       animation: headerBreath 8.5s ease-in-out infinite;
       transform-origin: center;
     }
@@ -197,7 +191,7 @@
 
     h1{
       margin: 0;
-      font-size: clamp(40px, 5.2vw, 78px);
+      font-size: var(--fontTitle);
       letter-spacing: -0.02em;
       line-height: 1;
       color: var(--title);
@@ -206,31 +200,36 @@
     }
 
     .period{
-      margin-top: 10px;
-      font-size: clamp(18px, 2.2vw, 28px);
+      margin-top: 8px;
+      font-size: var(--fontPeriod);
       font-weight: 900;
       letter-spacing: .01em;
       color: rgba(255,255,255,.92);
     }
 
     .date{
-      margin-top: 4px;
-      font-size: clamp(14px, 1.7vw, 18px);
+      margin-top: 2px;
+      font-size: var(--fontDate);
       color: rgba(255,255,255,.78);
     }
 
     .clock{
-      margin-top: 8px;
-      font-size: clamp(20px, 2.4vw, 34px);
+      margin-top: 6px;
+      font-size: var(--fontClock);
       font-weight: 950;
       letter-spacing: .08em;
       color: rgba(255,255,255,.92);
     }
 
+    /* ===== LISTA: ocupa tudo que sobrar e SEM SCROLL ===== */
     .list{
       width: 100%;
+      height: 100%;
       display: grid;
-      gap: 10px;
+      gap: var(--lineGap);
+      align-content: start;
+      overflow: hidden;
+      padding: 2px 0;
     }
 
     .rowCard{
@@ -238,11 +237,11 @@
       border-radius: 16px;
       background: linear-gradient(180deg, var(--cardTop), var(--cardBot));
       box-shadow:
-        0 22px 60px rgba(0,0,0,.30),
+        0 18px 44px rgba(0,0,0,.26),
         0 6px 14px rgba(0,0,0,.18);
       backdrop-filter: blur(12px);
 
-      padding: 14px 14px;
+      padding: var(--cardPadY) var(--cardPadX);
       display: grid;
       grid-template-columns: 1.6fr 1.2fr auto;
       align-items: center;
@@ -253,6 +252,7 @@
       transform: translateY(0);
       transition: transform .18s ease, background .18s ease, outline-color .18s ease, border-color .18s ease;
       will-change: transform;
+      min-height: 0; /* ajuda em grids responsivos */
     }
 
     .rowCard.enter{ animation: cardIn .22s ease-out both; }
@@ -271,9 +271,10 @@
     }
 
     .cell{
-      font-size: clamp(14px, 1.7vw, 20px);
+      font-size: var(--fontCell);
       color: rgba(255,255,255,.96);
       word-break: break-word;
+      line-height: 1.2;
     }
 
     .cell.turma{
@@ -305,8 +306,8 @@
 
     .pill{
       justify-self: end;
-      min-width: 64px;
-      padding: 9px 14px;
+      min-width: 58px;
+      padding: 8px 12px;
       border-radius: 999px;
       position: relative;
       overflow: hidden;
@@ -319,6 +320,7 @@
 
       color: #FFFFFF;
       font-weight: 950;
+      font-size: var(--fontPill);
       letter-spacing: .10em;
       text-align: center;
       backdrop-filter: blur(10px);
@@ -399,10 +401,10 @@
       .rowCard{
         grid-template-columns: 1fr;
         text-align: center;
-        gap: 8px;
+        gap: 6px;
       }
       .cell.turma{ text-align: center; padding-left: 0; }
-      .pill{ justify-self: center; margin-top: 4px; }
+      .pill{ justify-self: center; margin-top: 2px; }
       .rowCard::before{ width: 0; }
     }
 
@@ -412,7 +414,7 @@
       align-items:center;
       justify-content: space-between;
       gap: 10px;
-      padding: 6px 2px 2px;
+      padding: 4px 2px 2px;
     }
 
     .lastUpdate{
@@ -461,17 +463,13 @@
   <video class="bgVideo" id="bgVideo" autoplay muted loop playsinline preload="auto">
     <source src="bg.mp4" type="video/mp4" />
   </video>
-  <div class="bgTint" id="bgTint" aria-hidden="true"></div>
+  <div class="bgTint" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
 
-  <div class="wrapMotion" id="wrapMotion">
+  <div class="wrapMotion">
     <div class="wrap">
       <div class="topActions">
         <button class="btn" id="fsBtn">Tela cheia</button>
-      </div>
-
-      <div class="logoBox">
-        <img src="logo-senac.svg" alt="Senac" />
       </div>
 
       <div class="topbar">
@@ -510,29 +508,34 @@
   const lastUpdateLabel = document.getElementById("lastUpdateLabel");
   const statusLabel = document.getElementById("statusLabel");
   const fsBtn = document.getElementById("fsBtn");
-
   const bgVideo = document.getElementById("bgVideo");
 
-  // =========================
-  // Fallback vídeo
-  // =========================
-  let videoDisabled = false;
+  // ===== fullscreen
+  function isFullscreen(){ return !!document.fullscreenElement; }
+  async function toggleFullscreen(){
+    try{
+      if (!isFullscreen()) await document.documentElement.requestFullscreen();
+      else await document.exitFullscreen();
+    } catch {}
+  }
+  fsBtn.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", () => {
+    fsBtn.textContent = isFullscreen() ? "Sair da tela cheia" : "Tela cheia";
+  });
 
+  // ===== fallback vídeo
+  let videoDisabled = false;
   function disableVideoFallback(reason){
     if (videoDisabled) return;
     videoDisabled = true;
-
     try { bgVideo.pause(); } catch {}
     bgVideo.style.display = "none";
-
     document.documentElement.style.setProperty("--tintOpacity", "1.15");
-    console.warn("Vídeo de fundo desativado:", reason);
+    console.warn("Vídeo desativado:", reason);
   }
-
   bgVideo.addEventListener("error", () => disableVideoFallback("error"));
   bgVideo.addEventListener("stalled", () => disableVideoFallback("stalled"));
   bgVideo.addEventListener("abort", () => disableVideoFallback("abort"));
-
   (async () => {
     try{
       const p = bgVideo.play();
@@ -542,11 +545,8 @@
     }
   })();
 
-  // =========================
-  // Anti burn-in
-  // =========================
+  // ===== anti burn-in
   function rand(min, max){ return Math.random() * (max - min) + min; }
-
   function applyBurnInOffset(){
     const x = Math.round(rand(-2, 2));
     const y = Math.round(rand(-2, 2));
@@ -556,9 +556,7 @@
   applyBurnInOffset();
   setInterval(applyBurnInOffset, 3 * 60 * 1000);
 
-  // =========================
-  // Date/time helpers
-  // =========================
+  // ===== data/hora
   function nowInTZDate(){
     const parts = new Intl.DateTimeFormat("en-US", {
       timeZone: TZ, year:"numeric", month:"2-digit", day:"2-digit",
@@ -568,11 +566,6 @@
     return new Date(`${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}:${get("second")}`);
   }
 
-  /* ✅ horários ajustados:
-     Manhã: 00:00–11:30
-     Tarde: 11:31–17:00
-     Noite: 17:01–23:59
-  */
   function getPeriodLabel(date){
     const total = date.getHours()*60 + date.getMinutes();
     if (total <= (11*60 + 30)) return "Manhã";
@@ -603,42 +596,33 @@
     clockEl.textContent = `${get("hour")}:${get("minute")}:${get("second")}`;
   }
 
+  function formatTimeOnly(date){
+    return date.toLocaleTimeString("pt-BR", { timeZone: TZ, hour12: false });
+  }
+
+  // ===== CSV
   function parseCSV(text){
     const rows = [];
     let row = [], cell = "", inQuotes = false;
-
     for (let i=0;i<text.length;i++){
       const c = text[i];
       const next = text[i+1];
-
       if (c === '"' && inQuotes && next === '"'){ cell += '"'; i++; continue; }
       if (c === '"'){ inQuotes = !inQuotes; continue; }
-
       if (!inQuotes && c === ','){ row.push(cell); cell = ""; continue; }
-      if (!inQuotes && c === '\n'){
-        row.push(cell); rows.push(row);
-        row = []; cell = "";
-        continue;
-      }
+      if (!inQuotes && c === '\n'){ row.push(cell); rows.push(row); row = []; cell = ""; continue; }
       if (c !== '\r') cell += c;
     }
     if (cell.length || row.length){ row.push(cell); rows.push(row); }
     return rows;
   }
-
   function escapeHtml(str){
     return String(str ?? "")
       .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
       .replaceAll('"',"&quot;").replaceAll("'","&#039;");
   }
 
-  function formatTimeOnly(date){
-    return date.toLocaleTimeString("pt-BR", { timeZone: TZ, hour12: false });
-  }
-
-  // =========================
-  // Diff DOM render
-  // =========================
+  // ===== diff DOM
   const rowMap = new Map();
 
   function makeCard(rowIndex, a, b, c){
@@ -662,10 +646,7 @@
     card.appendChild(sala);
     card.appendChild(pill);
 
-    requestAnimationFrame(() => {
-      setTimeout(() => card.classList.remove("enter"), 260);
-    });
-
+    requestAnimationFrame(() => setTimeout(() => card.classList.remove("enter"), 260));
     return { card, turma, sala, pill };
   }
 
@@ -684,6 +665,46 @@
     }
   }
 
+  /* ✅ AUTOFIT: ajusta tamanhos para caber TODAS as linhas sem zoom */
+  function applyAutoFit(){
+    const n = listEl.querySelectorAll(".rowCard").length;
+    // valores base
+    let lineGap = 10, padY = 14, padX = 14;
+    let cellMin = 12, cellMax = 20;
+    let pillMin = 12, pillMax = 16;
+
+    // quanto mais linhas, mais compacto (sem ficar feio)
+    if (n >= 14){ lineGap = 8; padY = 12; cellMax = 18; }
+    if (n >= 18){ lineGap = 6; padY = 10; cellMax = 16; pillMax = 15; }
+    if (n >= 22){ lineGap = 5; padY = 9;  cellMax = 15; pillMax = 14; }
+    if (n >= 26){ lineGap = 4; padY = 8;  cellMax = 14; pillMax = 13; }
+
+    // aplica nas CSS vars
+    const r = document.documentElement.style;
+    r.setProperty("--lineGap", `${lineGap}px`);
+    r.setProperty("--cardPadY", `${padY}px`);
+    r.setProperty("--cardPadX", `${padX}px`);
+    r.setProperty("--fontCell", `clamp(${cellMin}px, 1.25vw, ${cellMax}px)`);
+    r.setProperty("--fontPill", `clamp(${pillMin}px, 1.1vw, ${pillMax}px)`);
+
+    // agora garante que não estourou altura: se estourar, compacta mais
+    requestAnimationFrame(() => {
+      const listRect = listEl.getBoundingClientRect();
+      const last = listEl.lastElementChild;
+      if (!last || !last.classList.contains("rowCard")) return;
+      const lastRect = last.getBoundingClientRect();
+      const overflow = lastRect.bottom - listRect.bottom;
+
+      if (overflow > 0){
+        // compactação final (um passo)
+        r.setProperty("--lineGap", `${Math.max(3, lineGap - 2)}px`);
+        r.setProperty("--cardPadY", `${Math.max(7, padY - 2)}px`);
+        r.setProperty("--fontCell", `clamp(11px, 1.1vw, ${Math.max(13, cellMax - 2)}px)`);
+        r.setProperty("--fontPill", `clamp(11px, 1.0vw, ${Math.max(12, pillMax - 2)}px)`);
+      }
+    });
+  }
+
   function renderOrUpdate(rowsABC){
     if (listEl.querySelector(".empty")) listEl.innerHTML = "";
 
@@ -695,7 +716,6 @@
       const a = (rowsABC[i][0] ?? "").trim();
       const b = (rowsABC[i][1] ?? "").trim();
       const c = (rowsABC[i][2] ?? "").trim();
-
       if ((a + b + c).trim() === "") continue;
 
       present.add(rowIndex);
@@ -727,7 +747,11 @@
 
     if (rowMap.size === 0){
       listEl.innerHTML = `<div class="empty">Sem dados em A${START_ROW}:C${END_ROW}.</div>`;
+      applyAutoFit();
+      return;
     }
+
+    applyAutoFit();
   }
 
   function setStatus(kind, msg){
@@ -802,19 +826,7 @@
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden) forceRefresh();
   });
-
-  // Fullscreen
-  function isFullscreen(){ return !!document.fullscreenElement; }
-  async function toggleFullscreen(){
-    try{
-      if (!isFullscreen()) await document.documentElement.requestFullscreen();
-      else await document.exitFullscreen();
-    } catch {}
-  }
-  fsBtn.addEventListener("click", toggleFullscreen);
-  document.addEventListener("fullscreenchange", () => {
-    fsBtn.textContent = isFullscreen() ? "Sair da tela cheia" : "Tela cheia";
-  });
+  window.addEventListener("resize", () => applyAutoFit());
 
   // init
   setHeaderLabels();
