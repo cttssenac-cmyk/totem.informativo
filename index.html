@@ -20,7 +20,7 @@
       --muted: rgba(255,255,255,.78);
       --line: rgba(255,255,255,.14);
 
-      --cardTop: rgba(255,255,255,.10);
+      --cardTop: rgba(255,255,255,.12);
       --cardBot: rgba(255,255,255,.06);
 
       --radius: 18px;
@@ -51,6 +51,11 @@
       opacity: .16;
       filter: saturate(1.02) contrast(1.06) brightness(.90);
       pointer-events: none;
+    }
+
+    /* ✅ 6) Performance: desliga vídeo em telas menores */
+    @media (max-width: 720px){
+      .bgVideo{ display:none; }
     }
 
     /* tint com suas cores (gold + steel) */
@@ -98,7 +103,8 @@
     }
 
     @media (prefers-reduced-motion: reduce){
-      .bgTint, .grain{ animation: none; }
+      .bgTint, .grain, .pill .sheen, .dot{ animation: none !important; }
+      .pill .sheen{ opacity: 0; }
     }
 
     /* ===== LAYOUT ===== */
@@ -166,6 +172,7 @@
       text-align: center;
     }
 
+    /* ✅ 1) tipografia signature (sem depender de internet) */
     h1{
       margin: 0;
       font-size: clamp(40px, 5.2vw, 78px);
@@ -173,6 +180,7 @@
       line-height: 1;
       color: var(--title);
       text-shadow: 0 12px 34px rgba(0,0,0,.28);
+      font-family: "Georgia", "Times New Roman", serif;
     }
 
     .period{
@@ -207,9 +215,14 @@
     .rowCard{
       border: 1px solid rgba(255,255,255,.14);
       border-radius: 16px;
+
+      /* ✅ 2) depth real + edge highlight */
       background: linear-gradient(180deg, var(--cardTop), var(--cardBot));
-      box-shadow: 0 14px 30px rgba(0,0,0,.18);
+      box-shadow:
+        0 22px 60px rgba(0,0,0,.28),
+        0 6px 14px rgba(0,0,0,.18);
       backdrop-filter: blur(12px);
+
       padding: 14px 14px;
       display: grid;
       grid-template-columns: 1.6fr 1.2fr auto;
@@ -217,6 +230,10 @@
       gap: 12px;
       overflow: hidden;
       position: relative;
+
+      /* ✅ 3) micro animação elegante */
+      transform: translateY(0);
+      transition: transform .18s ease, background .18s ease, outline-color .18s ease;
     }
 
     .rowCard::before{
@@ -245,6 +262,21 @@
       text-align: center;
       font-weight: 800;
       color: rgba(255,255,255,.92);
+      position: relative;
+    }
+
+    /* ✅ 4) divisor editorial (só desktop) */
+    @media (min-width: 721px){
+      .cell.sala::before{
+        content:"";
+        position:absolute;
+        left:-10px;
+        top:50%;
+        width:1px;
+        height:22px;
+        transform: translateY(-50%);
+        background: rgba(255,255,255,.14);
+      }
     }
 
     /* ✅ PILL PREMIUM + sheen */
@@ -325,7 +357,8 @@
 
     .rowCard.changed{
       outline: 2px solid rgba(90,109,132,.35);
-      background: linear-gradient(180deg, rgba(90,109,132,.14), rgba(255,255,255,.06));
+      background: linear-gradient(180deg, rgba(90,109,132,.16), rgba(255,255,255,.06));
+      transform: translateY(-2px); /* ✅ 3) pop discreto */
     }
 
     .empty{
@@ -371,12 +404,34 @@
       color: rgba(255,255,255,.52);
       font-size: 12px;
       text-align: right;
+      white-space: nowrap;
     }
     .status .ok{ color: rgba(255,255,255,.88); }
     .status .bad{ color: rgba(255,107,107,.95); }
 
-    @media (prefers-reduced-motion: reduce){
-      .bgTint, .grain, .pill .sheen{ animation: none; opacity: 0; }
+    /* ✅ 5) dot premium */
+    .dot{
+      display:inline-block;
+      width:6px; height:6px;
+      border-radius:999px;
+      margin-right:8px;
+      background: rgba(255,255,255,.88);
+      box-shadow: 0 0 0 0 rgba(255,255,255,.18);
+      animation: dotPulse 2.2s ease-in-out infinite;
+      vertical-align: middle;
+    }
+    .dot.bad{
+      background: rgba(255,107,107,.95);
+      box-shadow: 0 0 0 0 rgba(255,107,107,.18);
+      animation: dotPulseBad 1.8s ease-in-out infinite;
+    }
+    @keyframes dotPulse{
+      0%,100%{ box-shadow: 0 0 0 0 rgba(255,255,255,.18); opacity:.9; }
+      50%{ box-shadow: 0 0 0 10px rgba(255,255,255,0); opacity:.65; }
+    }
+    @keyframes dotPulseBad{
+      0%,100%{ box-shadow: 0 0 0 0 rgba(255,107,107,.18); opacity:.95; }
+      50%{ box-shadow: 0 0 0 10px rgba(255,107,107,0); opacity:.65; }
     }
   </style>
 </head>
@@ -536,8 +591,11 @@
   }
 
   function setStatus(kind, msg){
-    const cls = kind === "ok" ? "ok" : "bad";
-    statusLabel.innerHTML = `<span class="${cls}">${escapeHtml(msg)}</span>`;
+    if (kind === "ok"){
+      statusLabel.innerHTML = `<span class="ok"><span class="dot"></span>${escapeHtml(msg)}</span>`;
+    } else {
+      statusLabel.innerHTML = `<span class="bad"><span class="dot bad"></span>${escapeHtml(msg)}</span>`;
+    }
   }
 
   async function fetchWithTimeout(url, timeoutMs){
