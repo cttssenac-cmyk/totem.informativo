@@ -7,20 +7,19 @@
 
   <style>
     :root{
-      /* ✅ Fundo solicitado */
-      --bg: #004A8D;
+      --bg: #00244F;         /* ✅ fundo */
+      --title: #99835C;      /* ✅ cor do título */
 
-      /* Paleta elegante */
       --text: rgba(255,255,255,.96);
-      --muted: rgba(255,255,255,.78);
+      --muted: rgba(255,255,255,.75);
       --line: rgba(255,255,255,.14);
 
       --card: rgba(255,255,255,.10);
       --card2: rgba(255,255,255,.07);
-      --glass: rgba(255,255,255,.08);
 
-      --accent: rgba(247,148,30,.95);  /* detalhe (laranja Senac) */
-      --ok: rgba(121,206,220,.95);     /* feedback */
+      --pillBg: rgba(153,131,92,.18);
+      --pillBorder: rgba(153,131,92,.45);
+      --pillText: rgba(255,255,255,.95);
 
       --radius: 18px;
       --shadow: 0 14px 40px rgba(0,0,0,.25);
@@ -47,12 +46,12 @@
       height: 100%;
       object-fit: cover;
       transform: scale(1.05);
-      opacity: .20;                  /* mais discreto */
-      filter: saturate(1.05) contrast(1.05) brightness(.95);
+      opacity: .18;
+      filter: saturate(1.05) contrast(1.05) brightness(.92);
       pointer-events: none;
     }
 
-    /* “Tinta” por cima do vídeo, mantendo o azul do fundo */
+    /* tinta por cima do vídeo (mantém elegância do azul) */
     .bgTint{
       position: fixed;
       inset: -20%;
@@ -60,28 +59,28 @@
       pointer-events: none;
       background:
         radial-gradient(1100px 650px at 18% 12%, rgba(255,255,255,.10), transparent 60%),
-        radial-gradient(950px 520px at 82% 20%, rgba(247,148,30,.10), transparent 60%),
-        radial-gradient(900px 700px at 50% 95%, rgba(121,206,220,.10), transparent 65%),
-        linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,0) 55%);
+        radial-gradient(950px 520px at 82% 20%, rgba(153,131,92,.10), transparent 60%),
+        radial-gradient(900px 700px at 50% 95%, rgba(255,255,255,.08), transparent 65%),
+        linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,0) 55%);
       mix-blend-mode: overlay;
-      filter: blur(10px) saturate(1.05);
+      filter: blur(12px) saturate(1.03);
       animation: bgFloat 22s ease-in-out infinite;
       transform: translate3d(0,0,0);
     }
 
     @keyframes bgFloat{
       0%   { transform: translate3d(0,0,0) scale(1); }
-      50%  { transform: translate3d(1.4%, -1.2%, 0) scale(1.04); }
+      50%  { transform: translate3d(1.2%, -1.0%, 0) scale(1.04); }
       100% { transform: translate3d(0,0,0) scale(1); }
     }
 
-    /* Grain bem leve */
+    /* grain bem leve */
     .grain{
       position: fixed;
       inset: -30%;
       z-index: -4;
       pointer-events: none;
-      opacity: .06;
+      opacity: .055;
       mix-blend-mode: overlay;
       background-image:
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
@@ -106,19 +105,43 @@
       padding: clamp(14px, 2.5vw, 28px);
       min-height: 100vh;
       display: grid;
-      grid-template-rows: auto auto 1fr auto;
+      grid-template-rows: auto auto 1fr auto; /* topbar, header, list, footer */
       gap: 14px;
-      justify-items: center;
       align-content: start;
       position: relative;
       z-index: 0;
     }
 
+    /* ✅ topo: botão fullscreen à direita */
+    .topActions{
+      width: 100%;
+      display:flex;
+      justify-content: flex-end; /* extremidade direita */
+      align-items: center;
+      padding-top: 4px;
+    }
+
+    .btn{
+      cursor:pointer;
+      border: 1px solid rgba(255,255,255,.22);
+      background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.06));
+      color: rgba(255,255,255,.92);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing:.01em;
+      transition: transform .08s ease, filter .12s ease, border-color .12s ease;
+      backdrop-filter: blur(10px);
+    }
+    .btn:hover{ filter: brightness(1.05); border-color: rgba(255,255,255,.30); }
+    .btn:active{ transform: translateY(1px); }
+
     .logoBox{
       width: 100%;
       display: grid;
       place-items: center;
-      padding-top: 6px;
+      padding-top: 2px;
     }
     .logoBox img{
       width: clamp(120px, 18vw, 210px);
@@ -145,6 +168,8 @@
       font-size: clamp(40px, 5.2vw, 78px);
       letter-spacing: -0.02em;
       line-height: 1;
+      color: var(--title); /* ✅ cor do título */
+      text-shadow: 0 10px 30px rgba(0,0,0,.25);
     }
 
     .period{
@@ -152,7 +177,7 @@
       font-size: clamp(18px, 2.2vw, 28px);
       font-weight: 900;
       letter-spacing: .01em;
-      color: rgba(255,255,255,.90);
+      color: rgba(255,255,255,.92);
     }
 
     .date{
@@ -169,53 +194,11 @@
       color: rgba(255,255,255,.92);
     }
 
-    .mini{
-      width: 100%;
-      display:flex;
-      flex-wrap: wrap;
-      align-items:center;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap: 8px;
-      padding: 8px 12px;
-      border: 1px solid rgba(255,255,255,.16);
-      border-radius: 999px;
-      background: rgba(255,255,255,.08);
-      color: var(--text);
-      font-weight: 750;
-      font-size: 13px;
-      user-select:none;
-      white-space:nowrap;
-      backdrop-filter: blur(10px);
-    }
-    .chip small{ color: rgba(255,255,255,.70); font-weight:650; }
-
-    .btn{
-      cursor:pointer;
-      border: 1px solid rgba(255,255,255,.22);
-      background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.06));
-      color: rgba(255,255,255,.92);
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-weight: 900;
-      font-size: 13px;
-      letter-spacing:.01em;
-      transition: transform .08s ease, filter .12s ease, border-color .12s ease;
-      backdrop-filter: blur(10px);
-    }
-    .btn:hover{ filter: brightness(1.05); border-color: rgba(255,255,255,.30); }
-    .btn:active{ transform: translateY(1px); }
-
-    /* ===== LISTA MODERNA (sem cara de planilha) ===== */
+    /* ===== LISTA MODERNA ===== */
     .list{
       width: 100%;
       display: grid;
-      gap: 10px;                 /* ✅ espaço entre “linhas” */
+      gap: 10px; /* ✅ espaço entre salas */
     }
 
     .rowCard{
@@ -226,25 +209,24 @@
       backdrop-filter: blur(12px);
       padding: 14px 14px;
       display: grid;
-      grid-template-columns: 1.6fr 1.2fr .8fr; /* Turma | Sala/Lab | Nº */
+      grid-template-columns: 1.6fr 1.2fr auto; /* Turma | Sala | Nº pill */
       align-items: center;
       gap: 12px;
       overflow: hidden;
       position: relative;
     }
 
-    /* detalhe “premium” na lateral (bem sutil) */
+    /* detalhe lateral sutil */
     .rowCard::before{
       content:"";
       position:absolute;
       inset: 0;
       width: 6px;
-      background: linear-gradient(180deg, rgba(247,148,30,.80), rgba(247,148,30,0));
+      background: linear-gradient(180deg, rgba(153,131,92,.85), rgba(153,131,92,0));
       opacity: .55;
     }
 
     .cell{
-      text-align: center;
       font-size: clamp(14px, 1.7vw, 20px);
       color: rgba(255,255,255,.96);
       word-break: break-word;
@@ -254,21 +236,34 @@
       text-align: left;
       font-weight: 900;
       letter-spacing: .01em;
-      padding-left: 8px; /* por causa da barrinha lateral */
+      padding-left: 8px;
     }
     .cell.sala{
+      text-align: center;
       font-weight: 800;
       color: rgba(255,255,255,.92);
     }
-    .cell.num{
+
+    /* ✅ Nº como pill */
+    .pill{
+      justify-self: end;
+      min-width: 56px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--pillBorder);
+      background: var(--pillBg);
+      color: var(--pillText);
       font-weight: 950;
       letter-spacing: .08em;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 22px rgba(0,0,0,.18);
     }
 
     /* Highlight quando atualizar */
     .rowCard.changed{
-      outline: 2px solid rgba(121,206,220,.45);
-      background: linear-gradient(180deg, rgba(121,206,220,.14), rgba(255,255,255,.06));
+      outline: 2px solid rgba(255,255,255,.22);
+      background: linear-gradient(180deg, rgba(153,131,92,.16), rgba(255,255,255,.06));
     }
 
     .empty{
@@ -289,18 +284,34 @@
         gap: 8px;
       }
       .cell.turma{ text-align: center; padding-left: 0; }
-      .rowCard::before{ width: 0; } /* no mobile fica mais clean */
+      .pill{ justify-self: center; margin-top: 4px; }
+      .rowCard::before{ width: 0; }
     }
 
-    .footerStatus{
+    /* ===== FOOTER: última atualização à esquerda ===== */
+    .footerBar{
       width: 100%;
-      text-align: center;
-      color: rgba(255,255,255,.60);
-      font-size: 12px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
       padding: 6px 2px 2px;
     }
-    .footerStatus .ok{ color: var(--ok); }
-    .footerStatus .bad{ color: rgba(255,107,107,.95); }
+
+    .lastUpdate{
+      color: rgba(255,255,255,.65);
+      font-size: 12px;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .status{
+      color: rgba(255,255,255,.52);
+      font-size: 12px;
+      text-align: right;
+    }
+    .status .ok{ color: rgba(255,255,255,.85); }
+    .status .bad{ color: rgba(255,107,107,.95); }
   </style>
 </head>
 
@@ -313,6 +324,11 @@
   <div class="grain" aria-hidden="true"></div>
 
   <div class="wrap">
+    <!-- ✅ fullscreen no topo, à direita -->
+    <div class="topActions">
+      <button class="btn" id="fsBtn">Tela cheia</button>
+    </div>
+
     <div class="logoBox">
       <img src="logo-senac.svg" alt="Senac" />
     </div>
@@ -324,18 +340,15 @@
       <div class="clock" id="clockLabel">--:--:--</div>
     </div>
 
-    <div class="mini">
-      <div class="chip"><small>Atualiza</small> <span id="pollLabel">—</span></div>
-      <div class="chip"><small>Última</small> <span id="lastLabel">—</span></div>
-      <button class="btn" id="fsBtn">Tela cheia</button>
-    </div>
-
-    <!-- ✅ lista moderna -->
     <div class="list" id="list">
       <div class="empty">Carregando dados…</div>
     </div>
 
-    <div class="footerStatus" id="smallStatus">—</div>
+    <!-- ✅ abaixo de tudo: última atualização à esquerda -->
+    <div class="footerBar">
+      <div class="lastUpdate" id="lastUpdateLabel">Última atualização: —</div>
+      <div class="status" id="statusLabel">—</div>
+    </div>
   </div>
 
 <script>
@@ -353,12 +366,9 @@
   const dateEl = document.getElementById("dateLabel");
   const clockEl = document.getElementById("clockLabel");
   const listEl = document.getElementById("list");
-  const lastLabel = document.getElementById("lastLabel");
-  const pollLabel = document.getElementById("pollLabel");
+  const lastUpdateLabel = document.getElementById("lastUpdateLabel");
+  const statusLabel = document.getElementById("statusLabel");
   const fsBtn = document.getElementById("fsBtn");
-  const smallStatus = document.getElementById("smallStatus");
-
-  pollLabel.textContent = `${Math.round(POLL_MS/1000)}s`;
 
   function nowInTZDate(){
     const parts = new Intl.DateTimeFormat("en-US", {
@@ -428,7 +438,7 @@
       .replaceAll('"',"&quot;").replaceAll("'","&#039;");
   }
 
-  // Render “cards” mantendo A|B|C
+  // Render cards mantendo A|B|C
   let lastDataKey = null;
 
   function renderCards(rowsABC){
@@ -445,13 +455,12 @@
     const changed = (lastDataKey !== null && dataKey !== lastDataKey);
     lastDataKey = dataKey;
 
-    // cria cards
     listEl.innerHTML = nonEmpty.map(r => {
       return `
         <div class="rowCard">
           <div class="cell turma">${escapeHtml(r[0])}</div>
           <div class="cell sala">${escapeHtml(r[1])}</div>
-          <div class="cell num">${escapeHtml(r[2])}</div>
+          <div class="pill">${escapeHtml(r[2])}</div>
         </div>
       `;
     }).join("");
@@ -464,9 +473,9 @@
     }
   }
 
-  function setSmallStatus(kind, msg){
-    const cls = kind === "ok" ? "ok" : kind === "bad" ? "bad" : "";
-    smallStatus.innerHTML = `<span class="${cls}">${escapeHtml(msg)}</span>`;
+  function setStatus(kind, msg){
+    const cls = kind === "ok" ? "ok" : "bad";
+    statusLabel.innerHTML = `<span class="${cls}">${escapeHtml(msg)}</span>`;
   }
 
   async function fetchWithTimeout(url, timeoutMs){
@@ -485,6 +494,10 @@
 
   let backoff = POLL_MS;
   let timer = null;
+
+  function formatTimeOnly(date){
+    return date.toLocaleTimeString("pt-BR", { timeZone: TZ, hour12: false });
+  }
 
   async function tick(){
     try{
@@ -510,12 +523,12 @@
       renderCards(slice);
 
       const tzNow = nowInTZDate();
-      lastLabel.textContent = tzNow.toLocaleTimeString("pt-BR", { timeZone: TZ });
-      setSmallStatus("ok", "Online · Dados atualizados");
+      lastUpdateLabel.textContent = `Última atualização: ${formatTimeOnly(tzNow)}`;
 
+      setStatus("ok", "Online · Dados atualizados");
       backoff = POLL_MS;
     } catch (e){
-      setSmallStatus("bad", "Falha ao atualizar · Tentando reconectar");
+      setStatus("bad", "Falha ao atualizar · Tentando reconectar");
       backoff = Math.min(Math.round(backoff * 1.6), 60000);
     } finally {
       clearTimeout(timer);
@@ -534,6 +547,7 @@
     if (!document.hidden) forceRefresh();
   });
 
+  // Fullscreen
   function isFullscreen(){ return !!document.fullscreenElement; }
   async function toggleFullscreen(){
     try{
