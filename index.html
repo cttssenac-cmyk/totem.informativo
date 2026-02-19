@@ -279,8 +279,8 @@
   const TZ = "America/Sao_Paulo";
 
   // CSV publicado (Publish to web) - aba gid=356224596
-  const SHEET_CSV_URL =
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLR82lwtLhKVZNboLfA7kqJ5NPHhvTZ-sQWQGLrLT6IQo5GhJ4DfAjjlJsahl0-nqlZO8tpJuHE_VG/pub?output=csv&gid=356224596";
+  const SHEET_CSV_BASE =
+  "https://docs.google.com/spreadsheets/d/1L7Rf7ksHbH_L2-yjQl6kqg464j1aqNRdFOAPuLJNXm8/export?format=csv&gid=356224596";
 
   // Atualização rápida (cuidado: valores muito baixos podem ficar instáveis).
   const POLL_MS = 3000;
@@ -425,8 +425,11 @@
     try{
       setHeaderClock();
 
-      const url = SHEET_CSV_URL + `&__t=${Date.now()}`; // evita cache
-      const res = await fetch(url, { cache: "no-store" });
+      const url = `${SHEET_CSV_BASE}&_cb=${Date.now()}`;
+const res = await fetch(url, {
+  cache: "no-store",
+  headers: { "Pragma": "no-cache", "Cache-Control": "no-cache" }
+});
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
       const csv = await res.text();
