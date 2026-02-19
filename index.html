@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mapa de Sala</title>
+  <style>
+    :root{
+      --bg:#0b0c10; --panel:#12141b; --text:#f2f3f5; --muted:#b7bcc7; --line:rgba(255,255,255,.10);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:1100px;margin:0 auto;padding:clamp(14px,2.5vw,28px);min-height:100vh;display:grid;grid-template-rows:auto auto 1fr auto;gap:14px}
+    header{display:grid;gap:8px;padding:18px 18px 10px;border:1px solid var(--line);border-radius:var(--radius);
+      background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,0))}
+    h1{margin:0;font-size:clamp(36px,5vw,72px);letter-spacing:-.02em;line-height:1}
+    .period{font-size:clamp(18px,2.2vw,28px);font-weight:700}
+    .date{font-size:clamp(14px,1.7vw,18px);color:var(--muted)}
+    .status{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid var(--line);
+      border-radius:var(--radius);background:rgba(255,255,255,.03);color:var(--muted);font-size:14px}
+    .badge{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.03);color:var(--text);
+      font-weight:650;font-size:12px;white-space:nowrap}
+    .panel{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);overflow:hidden}
+    table{width:100%;border-collapse:collapse}
+    thead th{padding:14px;text-align:left;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);
+      background:rgba(255,255,255,.03);border-bottom:1px solid var(--line);position:sticky;top:0}
+    tbody td{padding:14px;border-bottom:1px solid var(--line);vertical-align:top;font-size:clamp(14px,1.6vw,18px)}
+    tbody tr:last-child td{border-bottom:none}
+    .empty{padding:22px 16px;color:var(--muted)}
+
+    @media (max-width:680px){
+      thead{display:none}
+      table,tbody,tr,td{display:block;width:100%}
+      tbody tr{border-bottom:1px solid var(--line);padding:10px 12px}
+      tbody tr:last-child{border-bottom:none}
+      tbody td{border:none;padding:8px 4px}
+      .label{display:block;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Mapa de Sala</h1>
+      <div class="period" id="periodLabel">—</div>
+      <div class="date" id="dateLabel">—</div>
+    </header>
+
+    <div class="status">
+      <div id="statusText">Carregando…</div>
+      <div class="badge" id="refreshBadge">Atualização: —</div>
+    </div>
+
+    <div class="panel">
+      <table aria-label="Mapa de sala">
+        <thead>
+          <tr>
+            <th>Coluna A</th>
+            <th>Coluna B</th>
+            <th>Coluna C</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td class="empty">Carregando dados…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="color: rgba(255,255,255,.45); font-size: 12px; padding: 4px 2px;">
+      Deixe esta página aberta em tela cheia para rodar 24h.
+    </div>
+  </div>
+
+<script>
+  // ========= CONFIG =========
+  const TZ = "America/Sao_Paulo";
+
+  // CSV do "Publish to web"
+  const SHEET_CSV_URL =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLR82lwtLhKVZNboLfA7kqJ5NPHhvTZ-sQWQGLrLT6IQo5GhJ4DfAjjlJsahl0-nqlZO8tpJuHE_VG/pub?output=csv&gid=356224596";
+
+  // Quer “o mais rápido possível”? 2000ms–5000ms costuma ser estável em TVs.
+  const POLL_MS = 3000;
+
+  // Range alvo
+  const START_ROW = 29; // inclusive
+  const END_ROW   = 48; // inclusive
+  const COLS = 3;       // A,B,C
+
+  const periodEl = document.getElementById("periodLabel");
+  const dateEl = document.getElementById("dateLabel");
+  const tbody = document.getElementById("tbody");
+  const statusText = document.getElementById("statusText");
+  const refreshBadge = document.getElementById("refreshBadge");
+
+  function nowInTZDate(){
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: TZ, year:"numeric", month:"2-digit", day:"2-digit",
+      hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false
+    }).formatToParts(new Date());
+    const get = (t) => parts.find(p => p.type === t)?.value;
+    return new Date(`${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}:${get("second")}`);
+  }
+
+  function getPeriodLabel(date){
+    const total = date.getHours()*60 + date.getMinutes();
+    if (total <= (11*60+30)) return "Manhã";     // 00:00–11:30
+    if (total <= (17*60+30)) return "Tarde";     // 11:31–17:30
+    return "Noite";                              // 17:31–23:59
+  }
+
+  function formatPtBrLongDate(date){
+    return new Intl.DateTimeFormat("pt-BR", {
+      timeZone: TZ, weekday:"long", day:"numeric", month:"long", year:"numeric"
+    }).format(date);
+  }
+
+  function setHeaderClock(){
+    const tzNow = nowInTZDate();
+    periodEl.textContent = getPeriodLabel(tzNow);
+    dateEl.textContent = formatPtBrLongDate(tzNow);
+  }
+
+  // CSV parser simples (suporta aspas)
+  function parseCSV(text){
+    const rows = [];
+    let row = [], cell = "", inQuotes = false;
+
+    for (let i=0;i<text.length;i++){
+      const c = text[i];
+      const next = text[i+1];
+
+      if (c === '"' && inQuotes && next === '"'){ cell += '"'; i++; continue; }
+      if (c === '"'){ inQuotes = !inQuotes; continue; }
+
+      if (!inQuotes && (c === ',')){
+        row.push(cell); cell = ""; continue;
+      }
+      if (!inQuotes && (c === '\n')){
+        row.push(cell);
+        rows.push(row);
+        row = []; cell = "";
+        continue;
+      }
+      if (c !== '\r') cell += c;
+    }
+    // última linha
+    if (cell.length || row.length){ row.push(cell); rows.push(row); }
+    return rows;
+  }
+
+  function escapeHtml(str){
+    return String(str ?? "")
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  }
+
+  function render(rowsABC){
+    const isMobile = window.matchMedia("(max-width: 680px)").matches;
+    const nonEmpty = rowsABC.filter(r => (r[0] || r[1] || r[2]).trim?.() !== "");
+
+    if (!nonEmpty.length){
+      tbody.innerHTML = `<tr><td class="empty">Sem dados em A${START_ROW}:C${END_ROW}.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = nonEmpty.map(r => {
+      if (!isMobile){
+        return `<tr>
+          <td>${escapeHtml(r[0])}</td>
+          <td>${escapeHtml(r[1])}</td>
+          <td>${escapeHtml(r[2])}</td>
+        </tr>`;
+      }
+      return `<tr>
+        <td><span class="label">Coluna A</span>${escapeHtml(r[0]) || "—"}</td>
+        <td><span class="label">Coluna B</span>${escapeHtml(r[1]) || "—"}</td>
+        <td><span class="label">Coluna C</span>${escapeHtml(r[2]) || "—"}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  let timer = null;
+  let backoff = POLL_MS;
+
+  async function tick(){
+    try{
+      setHeaderClock();
+
+      // Evita cache agressivo
+      const url = SHEET_CSV_URL + `&__t=${Date.now()}`;
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const csv = await res.text();
+      const all = parseCSV(csv);
+
+      // Observação: CSV é 1-based visualmente, mas array é 0-based.
+      // A29 => índice 28. A48 => índice 47.
+      const startIdx = START_ROW - 1;
+      const endIdx = END_ROW - 1;
+
+      const slice = all.slice(startIdx, endIdx + 1).map(r => {
+        const a = (r[0] ?? "").trim();
+        const b = (r[1] ?? "").trim();
+        const c = (r[2] ?? "").trim();
+        return [a, b, c];
+      });
+
+      render(slice);
+
+      const tzNow = nowInTZDate();
+      statusText.textContent = "Online · Dados carregados";
+      refreshBadge.textContent = `Atualização: ${tzNow.toLocaleTimeString("pt-BR", { timeZone: TZ })}`;
+
+      backoff = POLL_MS;
+    } catch (e){
+      statusText.textContent = `Falha ao atualizar (tentando de novo) · ${e?.message || e}`;
+      backoff = Math.min(Math.round(backoff * 1.6), 60000);
+    } finally {
+      clearTimeout(timer);
+      timer = setTimeout(tick, backoff);
+    }
+  }
+
+  setHeaderClock();
+  setInterval(setHeaderClock, 10000);
+  tick();
+</script>
+</body>
+</html>
