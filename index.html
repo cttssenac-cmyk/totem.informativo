@@ -7,7 +7,7 @@
 
   <style>
     :root{
-      /* ✅ paleta definida */
+      /* ✅ paleta */
       --bg: #00244F;
       --title: #D9A74C;
 
@@ -25,6 +25,13 @@
 
       --radius: 18px;
       --shadow: 0 16px 44px rgba(0,0,0,.28);
+
+      /* burn-in offset (muito sutil) */
+      --boX: 0px;
+      --boY: 0px;
+
+      /* tint strength (aumenta quando vídeo falha) */
+      --tintOpacity: 1;
     }
 
     *{ box-sizing:border-box; }
@@ -39,7 +46,7 @@
       position: relative;
     }
 
-    /* ===== FUNDO COM VÍDEO (discreto + elegante) ===== */
+    /* ===== FUNDO COM VÍDEO ===== */
     .bgVideo{
       position: fixed;
       inset: 0;
@@ -52,18 +59,16 @@
       filter: saturate(1.02) contrast(1.06) brightness(.90);
       pointer-events: none;
     }
-
-    /* ✅ 6) Performance: desliga vídeo em telas menores */
     @media (max-width: 720px){
       .bgVideo{ display:none; }
     }
 
-    /* tint com suas cores (gold + steel) */
     .bgTint{
       position: fixed;
       inset: -20%;
       z-index: -5;
       pointer-events: none;
+      opacity: var(--tintOpacity);
       background:
         radial-gradient(1100px 650px at 16% 12%, rgba(90,109,132,.22), transparent 62%),
         radial-gradient(900px 520px at 84% 18%, rgba(217,167,76,.18), transparent 62%),
@@ -74,14 +79,12 @@
       animation: bgFloat 24s ease-in-out infinite;
       transform: translate3d(0,0,0);
     }
-
     @keyframes bgFloat{
       0%   { transform: translate3d(0,0,0) scale(1); }
       50%  { transform: translate3d(1.2%, -1.1%, 0) scale(1.05); }
       100% { transform: translate3d(0,0,0) scale(1); }
     }
 
-    /* grain bem sutil */
     .grain{
       position: fixed;
       inset: -30%;
@@ -95,7 +98,6 @@
       animation: grainMove 11s steps(10) infinite;
       filter: contrast(115%) brightness(112%);
     }
-
     @keyframes grainMove{
       0%{ transform: translate3d(0,0,0) scale(1); }
       50%{ transform: translate3d(-3%, 2%, 0) scale(1.02); }
@@ -105,9 +107,17 @@
     @media (prefers-reduced-motion: reduce){
       .bgTint, .grain, .pill .sheen, .dot{ animation: none !important; }
       .pill .sheen{ opacity: 0; }
+      .wrapMotion{ transform: none !important; }
+      .rowCard{ transition: none !important; }
     }
 
-    /* ===== LAYOUT ===== */
+    /* ===== CONTEÚDO (com micro deslocamento anti burn-in) ===== */
+    .wrapMotion{
+      transform: translate3d(var(--boX), var(--boY), 0);
+      transition: transform 900ms ease;
+      will-change: transform;
+    }
+
     .wrap{
       max-width: 1180px;
       margin: 0 auto;
@@ -170,9 +180,16 @@
       box-shadow: var(--shadow);
       backdrop-filter: blur(12px);
       text-align: center;
+
+      /* motion sutil “premium”: respiração MUITO leve */
+      animation: headerBreath 8.5s ease-in-out infinite;
+      transform-origin: center;
+    }
+    @keyframes headerBreath{
+      0%,100% { transform: translateY(0); }
+      50%     { transform: translateY(-1px); }
     }
 
-    /* ✅ 1) tipografia signature (sem depender de internet) */
     h1{
       margin: 0;
       font-size: clamp(40px, 5.2vw, 78px);
@@ -205,7 +222,7 @@
       color: rgba(255,255,255,.92);
     }
 
-    /* ===== LISTA MODERNA ===== */
+    /* ===== LISTA ===== */
     .list{
       width: 100%;
       display: grid;
@@ -215,8 +232,6 @@
     .rowCard{
       border: 1px solid rgba(255,255,255,.14);
       border-radius: 16px;
-
-      /* ✅ 2) depth real + edge highlight */
       background: linear-gradient(180deg, var(--cardTop), var(--cardBot));
       box-shadow:
         0 22px 60px rgba(0,0,0,.28),
@@ -231,9 +246,18 @@
       overflow: hidden;
       position: relative;
 
-      /* ✅ 3) micro animação elegante */
       transform: translateY(0);
-      transition: transform .18s ease, background .18s ease, outline-color .18s ease;
+      transition: transform .18s ease, background .18s ease, outline-color .18s ease, border-color .18s ease;
+      will-change: transform;
+    }
+
+    /* motion: entrada suave ao criar card */
+    .rowCard.enter{
+      animation: cardIn .22s ease-out both;
+    }
+    @keyframes cardIn{
+      from{ opacity: 0; transform: translateY(6px); }
+      to  { opacity: 1; transform: translateY(0); }
     }
 
     .rowCard::before{
@@ -265,7 +289,6 @@
       position: relative;
     }
 
-    /* ✅ 4) divisor editorial (só desktop) */
     @media (min-width: 721px){
       .cell.sala::before{
         content:"";
@@ -279,7 +302,7 @@
       }
     }
 
-    /* ✅ PILL PREMIUM + sheen */
+    /* ===== PILL PREMIUM + sheen ===== */
     .pill{
       justify-self: end;
       min-width: 64px;
@@ -343,22 +366,24 @@
       opacity: .65;
       pointer-events:none;
       mix-blend-mode: screen;
-      animation: pillSheen 6.8s ease-in-out infinite;
+
+      /* motion: sheen mais “quiet”, um pouco mais lento */
+      animation: pillSheen 8.8s ease-in-out infinite;
       filter: blur(0.5px);
     }
 
     @keyframes pillSheen{
-      0%   { transform: translateX(-65%); opacity: 0; }
-      18%  { opacity: .55; }
-      50%  { transform: translateX(65%); opacity: .55; }
-      82%  { opacity: .10; }
-      100% { transform: translateX(65%); opacity: 0; }
+      0%   { transform: translateX(-70%); opacity: 0; }
+      20%  { opacity: .45; }
+      50%  { transform: translateX(70%); opacity: .45; }
+      85%  { opacity: .10; }
+      100% { transform: translateX(70%); opacity: 0; }
     }
 
     .rowCard.changed{
       outline: 2px solid rgba(90,109,132,.35);
       background: linear-gradient(180deg, rgba(90,109,132,.16), rgba(255,255,255,.06));
-      transform: translateY(-2px); /* ✅ 3) pop discreto */
+      transform: translateY(-2px);
     }
 
     .empty{
@@ -409,7 +434,6 @@
     .status .ok{ color: rgba(255,255,255,.88); }
     .status .bad{ color: rgba(255,107,107,.95); }
 
-    /* ✅ 5) dot premium */
     .dot{
       display:inline-block;
       width:6px; height:6px;
@@ -437,35 +461,37 @@
 </head>
 
 <body>
-  <video class="bgVideo" autoplay muted loop playsinline preload="auto">
+  <video class="bgVideo" id="bgVideo" autoplay muted loop playsinline preload="auto">
     <source src="bg.mp4" type="video/mp4" />
   </video>
-  <div class="bgTint" aria-hidden="true"></div>
+  <div class="bgTint" id="bgTint" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
 
-  <div class="wrap">
-    <div class="topActions">
-      <button class="btn" id="fsBtn">Tela cheia</button>
-    </div>
+  <div class="wrapMotion" id="wrapMotion">
+    <div class="wrap">
+      <div class="topActions">
+        <button class="btn" id="fsBtn">Tela cheia</button>
+      </div>
 
-    <div class="logoBox">
-      <img src="logo-senac.svg" alt="Senac" />
-    </div>
+      <div class="logoBox">
+        <img src="logo-senac.svg" alt="Senac" />
+      </div>
 
-    <div class="topbar">
-      <h1>Salas de Aula</h1>
-      <div class="period" id="periodLabel">—</div>
-      <div class="date" id="dateLabel">—</div>
-      <div class="clock" id="clockLabel">--:--:--</div>
-    </div>
+      <div class="topbar">
+        <h1>Salas de Aula</h1>
+        <div class="period" id="periodLabel">—</div>
+        <div class="date" id="dateLabel">—</div>
+        <div class="clock" id="clockLabel">--:--:--</div>
+      </div>
 
-    <div class="list" id="list">
-      <div class="empty">Carregando dados…</div>
-    </div>
+      <div class="list" id="list">
+        <div class="empty">Carregando dados…</div>
+      </div>
 
-    <div class="footerBar">
-      <div class="lastUpdate" id="lastUpdateLabel">Última atualização: —</div>
-      <div class="status" id="statusLabel">—</div>
+      <div class="footerBar">
+        <div class="lastUpdate" id="lastUpdateLabel">Última atualização: —</div>
+        <div class="status" id="statusLabel">—</div>
+      </div>
     </div>
   </div>
 
@@ -488,6 +514,63 @@
   const statusLabel = document.getElementById("statusLabel");
   const fsBtn = document.getElementById("fsBtn");
 
+  const bgVideo = document.getElementById("bgVideo");
+  const bgTint  = document.getElementById("bgTint");
+  const wrapMotion = document.getElementById("wrapMotion");
+
+  // =========================
+  // 2) Fallback automático do vídeo
+  // =========================
+  let videoDisabled = false;
+
+  function disableVideoFallback(reason){
+    if (videoDisabled) return;
+    videoDisabled = true;
+
+    try { bgVideo.pause(); } catch {}
+    bgVideo.style.display = "none";
+
+    // aumenta um pouco o “tint” pra manter a riqueza do fundo sem vídeo
+    document.documentElement.style.setProperty("--tintOpacity", "1.15");
+
+    // (opcional) reduz motion do grain um pouco? aqui mantemos igual.
+    console.warn("Vídeo de fundo desativado:", reason);
+  }
+
+  // se o browser bloquear autoplay ou não carregar
+  bgVideo.addEventListener("error", () => disableVideoFallback("error"));
+  bgVideo.addEventListener("stalled", () => disableVideoFallback("stalled"));
+  bgVideo.addEventListener("abort", () => disableVideoFallback("abort"));
+
+  // tentativa: se autoplay falhar, cai fora com elegância
+  (async () => {
+    try{
+      // Alguns dispositivos exigem play() explícito
+      const p = bgVideo.play();
+      if (p && typeof p.then === "function") await p;
+    } catch(e){
+      disableVideoFallback("autoplay-blocked");
+    }
+  })();
+
+  // =========================
+  // 3) Anti burn-in (micro deslocamento imperceptível)
+  // =========================
+  function rand(min, max){ return Math.random() * (max - min) + min; }
+
+  function applyBurnInOffset(){
+    // 1–2px no máximo. Em telas grandes quase imperceptível.
+    const x = Math.round(rand(-2, 2));
+    const y = Math.round(rand(-2, 2));
+    document.documentElement.style.setProperty("--boX", `${x}px`);
+    document.documentElement.style.setProperty("--boY", `${y}px`);
+  }
+  applyBurnInOffset();
+  setInterval(applyBurnInOffset, 3 * 60 * 1000); // a cada 3 min
+
+  // =========================
+  // Data/time helpers
+  // =========================
   function nowInTZDate(){
     const parts = new Intl.DateTimeFormat("en-US", {
       timeZone: TZ, year:"numeric", month:"2-digit", day:"2-digit",
@@ -516,7 +599,7 @@
     dateEl.textContent = formatPtBrLongDate(tzNow);
   }
 
-  // relógio em tempo real (offset via Date header quando disponível)
+  // relógio “base rede” via offset do header Date
   let networkOffsetMs = 0;
   function renderClock(){
     const adjusted = new Date(Date.now() + networkOffsetMs);
@@ -556,38 +639,115 @@
       .replaceAll('"',"&quot;").replaceAll("'","&#039;");
   }
 
-  let lastDataKey = null;
+  function formatTimeOnly(date){
+    return date.toLocaleTimeString("pt-BR", { timeZone: TZ, hour12: false });
+  }
 
-  function renderCards(rowsABC){
-    const nonEmpty = rowsABC
-      .map(r => [ (r[0]??"").trim(), (r[1]??"").trim(), (r[2]??"").trim() ])
-      .filter(r => (r[0] + r[1] + r[2]).trim() !== "");
+  // =========================
+  // 1) Atualização premium: diff DOM (sem re-render total)
+  // =========================
+  const rowMap = new Map(); // key: rowIndex (29..48) -> { el, valuesKey }
+  let initialPaint = true;
 
-    if (!nonEmpty.length){
+  function makeCard(rowIndex, a, b, c){
+    const card = document.createElement("div");
+    card.className = "rowCard enter";
+    card.dataset.row = String(rowIndex);
+
+    const turma = document.createElement("div");
+    turma.className = "cell turma";
+    turma.innerHTML = escapeHtml(a);
+
+    const sala = document.createElement("div");
+    sala.className = "cell sala";
+    sala.innerHTML = escapeHtml(b);
+
+    const pill = document.createElement("div");
+    pill.className = "pill";
+    pill.innerHTML = `<span class="sheen"></span>${escapeHtml(c)}`;
+
+    card.appendChild(turma);
+    card.appendChild(sala);
+    card.appendChild(pill);
+
+    // remove class enter após animar (evita reanimar sem querer)
+    requestAnimationFrame(() => {
+      setTimeout(() => card.classList.remove("enter"), 260);
+    });
+
+    return { card, turma, sala, pill };
+  }
+
+  function setChanged(card){
+    card.classList.add("changed");
+    setTimeout(() => card.classList.remove("changed"), 900);
+  }
+
+  function updateCardNodes(nodes, a, b, c){
+    // Atualiza somente se diferente (evita repaints)
+    if (nodes.turma.textContent !== a) nodes.turma.textContent = a;
+    if (nodes.sala.textContent !== b) nodes.sala.textContent = b;
+
+    // pill: preserva sheen
+    const currentText = nodes.pill.textContent?.trim() ?? "";
+    if (currentText !== (c ?? "").trim()){
+      nodes.pill.innerHTML = `<span class="sheen"></span>${escapeHtml(c)}`;
+    }
+  }
+
+  function renderOrUpdate(rowsABC){
+    // limpa placeholder “Carregando…”
+    if (listEl.querySelector(".empty")) listEl.innerHTML = "";
+
+    // monta set de rows presentes
+    const present = new Set();
+    const fragments = document.createDocumentFragment();
+
+    for (let i=0;i<rowsABC.length;i++){
+      const rowIndex = START_ROW + i;
+      const a = (rowsABC[i][0] ?? "").trim();
+      const b = (rowsABC[i][1] ?? "").trim();
+      const c = (rowsABC[i][2] ?? "").trim();
+
+      const isEmpty = (a + b + c).trim() === "";
+      if (isEmpty) continue;
+
+      present.add(rowIndex);
+
+      const key = `${a}¦${b}¦${c}`;
+      const existing = rowMap.get(rowIndex);
+
+      if (!existing){
+        const nodes = makeCard(rowIndex, a, b, c);
+        rowMap.set(rowIndex, { el: nodes.card, nodes, valuesKey: key });
+        fragments.appendChild(nodes.card);
+      } else {
+        // reusa elemento existente
+        if (existing.valuesKey !== key){
+          updateCardNodes(existing.nodes, a, b, c);
+          existing.valuesKey = key;
+          setChanged(existing.el);
+        }
+        fragments.appendChild(existing.el);
+      }
+    }
+
+    // remove rows que sumiram
+    for (const [rowIndex, entry] of rowMap.entries()){
+      if (!present.has(rowIndex)){
+        try { entry.el.remove(); } catch {}
+        rowMap.delete(rowIndex);
+      }
+    }
+
+    // reordena DOM de forma estável (sem flicker): append fragment reanexa elementos na ordem
+    listEl.appendChild(fragments);
+
+    if (rowMap.size === 0){
       listEl.innerHTML = `<div class="empty">Sem dados em A${START_ROW}:C${END_ROW}.</div>`;
-      return;
     }
 
-    const dataKey = nonEmpty.map(r => r.join("¦")).join("§");
-    const changed = (lastDataKey !== null && dataKey !== lastDataKey);
-    lastDataKey = dataKey;
-
-    listEl.innerHTML = nonEmpty.map(r => {
-      return `
-        <div class="rowCard">
-          <div class="cell turma">${escapeHtml(r[0])}</div>
-          <div class="cell sala">${escapeHtml(r[1])}</div>
-          <div class="pill"><span class="sheen"></span>${escapeHtml(r[2])}</div>
-        </div>
-      `;
-    }).join("");
-
-    if (changed){
-      [...listEl.querySelectorAll(".rowCard")].forEach(card => card.classList.add("changed"));
-      setTimeout(() => {
-        [...listEl.querySelectorAll(".rowCard")].forEach(card => card.classList.remove("changed"));
-      }, 900);
-    }
+    initialPaint = false;
   }
 
   function setStatus(kind, msg){
@@ -615,10 +775,6 @@
   let backoff = POLL_MS;
   let timer = null;
 
-  function formatTimeOnly(date){
-    return date.toLocaleTimeString("pt-BR", { timeZone: TZ, hour12: false });
-  }
-
   async function tick(){
     try{
       setHeaderLabels();
@@ -640,7 +796,7 @@
       const endIdx = END_ROW - 1;
 
       const slice = all.slice(startIdx, endIdx + 1).map(r => [r[0], r[1], r[2]]);
-      renderCards(slice);
+      renderOrUpdate(slice);
 
       const tzNow = nowInTZDate();
       lastUpdateLabel.textContent = `Última atualização: ${formatTimeOnly(tzNow)}`;
@@ -680,6 +836,7 @@
     fsBtn.textContent = isFullscreen() ? "Sair da tela cheia" : "Tela cheia";
   });
 
+  // init
   setHeaderLabels();
   renderClock();
   setInterval(setHeaderLabels, 10000);
