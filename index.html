@@ -3,35 +3,28 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mapa de Sala</title>
+  <title>Salas de Aula</title>
 
   <style>
-    /* =============================
-       PALETA (Senac)
-       Azul 1: #004A8D
-       Azul 2: #005692
-       Laranja: #F7941D
-       Laranja claro: #FDC180
-       Azul claro: #79CEDC
-       Vinho: #4D2F40
-    ============================== */
     :root{
-      --bg: #4D2F40;        /* base escura */
-      --panel: #004A8D;     /* painéis */
-      --panel2: #005692;    /* variação */
+      --bg: #4D2F40;
+      --panel: #004A8D;
+      --panel2: #005692;
+
       --text: #ffffff;
-      --muted: rgba(255,255,255,.80);
+      --muted: rgba(255,255,255,.78);
       --line: rgba(255,255,255,.14);
 
-      --accent: #F7941D;    /* CTA / destaque */
-      --accentSoft: #FDC180;/* apoio */
-      --info: #79CEDC;      /* status ok / highlight */
+      --accent: #F7941D;
+      --accentSoft: #FDC180;
+      --info: #79CEDC;
 
-      --radius: 16px;
+      --radius: 18px;
       --shadow: 0 14px 40px rgba(0,0,0,.35);
     }
 
     *{ box-sizing:border-box; }
+
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -48,84 +41,105 @@
       max-width: 1180px;
       margin: 0 auto;
       padding: clamp(14px, 2.5vw, 28px);
-      display:grid;
-      gap:14px;
-      min-height:100vh;
+      min-height: 100vh;
+      display: grid;
       grid-template-rows: auto auto 1fr auto;
+      gap: 14px;
+      justify-items: center; /* centraliza tudo */
+      align-content: start;
     }
 
-    /* Top */
+    /* Logo */
+    .logoBox{
+      width: 100%;
+      display: grid;
+      place-items: center;
+      padding-top: 6px;
+    }
+    .logoBox img{
+      width: clamp(110px, 18vw, 190px);
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,.25));
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    /* Header centralizado */
     .topbar{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:14px;
-      padding: 18px 18px 14px;
+      width: 100%;
+      padding: 20px 18px 18px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,0));
       box-shadow: var(--shadow);
       backdrop-filter: blur(8px);
+      text-align: center;
     }
 
-    .title{ display:grid; gap:8px; }
     h1{
-      margin:0;
-      font-size: clamp(38px, 5vw, 74px);
+      margin: 0;
+      font-size: clamp(40px, 5.2vw, 78px);
       letter-spacing: -0.02em;
       line-height: 1;
     }
 
-    .subline{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      align-items:center;
-    }
-
     .period{
+      margin-top: 10px;
       font-size: clamp(18px, 2.2vw, 28px);
-      font-weight: 850;
+      font-weight: 900;
       letter-spacing: .01em;
       color: var(--accentSoft);
     }
+
     .date{
+      margin-top: 4px;
       font-size: clamp(14px, 1.7vw, 18px);
       color: var(--muted);
     }
 
-    .actions{
+    .clock{
+      margin-top: 8px;
+      font-size: clamp(20px, 2.4vw, 34px);
+      font-weight: 950;
+      letter-spacing: .08em;
+      color: rgba(255,255,255,.92);
+    }
+
+    /* Mini bar central */
+    .mini{
+      width: 100%;
       display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      justify-content:flex-end;
+      flex-wrap: wrap;
       align-items:center;
+      justify-content: center;
+      gap: 10px;
     }
 
     .chip{
       display:inline-flex;
       align-items:center;
-      gap:8px;
+      gap: 8px;
       padding: 8px 12px;
-      border:1px solid var(--line);
+      border: 1px solid var(--line);
       border-radius: 999px;
       background: rgba(0,74,141,.22);
       color: var(--text);
-      font-weight: 700;
+      font-weight: 750;
       font-size: 13px;
       user-select:none;
       white-space:nowrap;
     }
-    .chip small{ color: rgba(255,255,255,.75); font-weight:650; }
+    .chip small{ color: rgba(255,255,255,.72); font-weight:650; }
 
     .btn{
       cursor:pointer;
       border: 1px solid rgba(247,148,30,.55);
       background: linear-gradient(180deg, rgba(247,148,30,.95), rgba(247,148,30,.70));
       color: #1b0f17;
-      padding: 10px 12px;
+      padding: 10px 14px;
       border-radius: 12px;
-      font-weight: 900;
+      font-weight: 950;
       font-size: 13px;
       letter-spacing:.01em;
       transition: transform .08s ease, filter .12s ease;
@@ -133,143 +147,111 @@
     .btn:hover{ filter: brightness(1.06); }
     .btn:active{ transform: translateY(1px); }
 
-    .status{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding: 12px 14px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(0,74,141,.18);
-      color: rgba(255,255,255,.86);
-      box-shadow: 0 10px 26px rgba(0,0,0,.18);
-      backdrop-filter: blur(8px);
-    }
-    .status strong{ color: var(--text); }
-
-    .dot{
-      width:10px;height:10px;border-radius:999px;
-      background: var(--accent);
-      box-shadow: 0 0 0 4px rgba(247,148,30,.20);
-      display:inline-block;
-      vertical-align:middle;
-      margin-right:8px;
-    }
-    .dot.ok{ background: var(--info); box-shadow: 0 0 0 4px rgba(121,206,220,.18); }
-    .dot.bad{ background: #ff6b6b; box-shadow: 0 0 0 4px rgba(255,107,107,.16); }
-
-    /* Table/Card */
+    /* Dados (sem títulos de colunas) */
     .panel{
+      width: 100%;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      overflow:hidden;
+      overflow: hidden;
       box-shadow: var(--shadow);
       background: linear-gradient(180deg, rgba(0,74,141,.46), rgba(0,86,146,.26));
       backdrop-filter: blur(10px);
     }
 
-    table{ width:100%; border-collapse:collapse; }
-    thead th{
-      text-align:left;
-      padding: 14px;
-      font-size: 13px;
-      letter-spacing: .05em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,.88);
-      background: rgba(0,86,146,.35);
+    table{ width:100%; border-collapse: collapse; }
+    thead{ display:none; }
+
+    /* 3 colunas por linha (A, B, C) */
+    tbody tr{
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
       border-bottom: 1px solid var(--line);
-      position: sticky;
-      top: 0;
-      backdrop-filter: blur(8px);
     }
+    tbody tr:last-child{ border-bottom: none; }
 
     tbody td{
-      padding: 14px;
-      border-bottom: 1px solid var(--line);
-      vertical-align: top;
-      font-size: clamp(14px, 1.6vw, 18px);
-      background: rgba(0,0,0,0);
-      transition: background .35s ease;
-    }
-    tbody tr:nth-child(2n) td{ background: rgba(255,255,255,.05); }
-    tbody tr:last-child td{ border-bottom:none; }
-
-    .changed td{
-      background: rgba(121,206,220,.22) !important; /* highlight ao mudar */
+      padding: 14px 14px;
+      font-size: clamp(14px, 1.7vw, 20px);
+      text-align: center;
+      color: rgba(255,255,255,.95);
+      word-break: break-word;
     }
 
-    .empty{ padding: 20px 16px; color: rgba(255,255,255,.78); }
+    tbody tr:nth-child(2n){
+      background: rgba(255,255,255,.05);
+    }
 
-    /* Mobile vira cards */
+    .changed{
+      background: rgba(121,206,220,.20) !important;
+    }
+
+    .empty{
+      padding: 18px 16px;
+      color: rgba(255,255,255,.80);
+      text-align: center;
+    }
+
+    /* Mobile: empilha A/B/C (sem rótulos) */
     @media (max-width: 720px){
-      thead{ display:none; }
-      table, tbody, tr, td{ display:block; width:100%; }
-      tbody tr{ border-bottom: 1px solid var(--line); padding: 10px 12px; }
-      tbody tr:last-child{ border-bottom:none; }
-      tbody td{ border:none; padding: 9px 4px; background: transparent !important; }
-      .label{
-        display:block;
-        color: rgba(255,255,255,.75);
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: .05em;
-        margin-bottom: 4px;
+      tbody tr{
+        grid-template-columns: 1fr;
+        padding: 10px 8px;
       }
-      .changed{ background: rgba(121,206,220,.22) !important; border-radius: 12px; }
-      .changed td{ background: transparent !important; }
+      tbody td{
+        padding: 10px 10px;
+        border-top: 1px dashed rgba(255,255,255,.14);
+      }
+      tbody td:first-child{ border-top: none; }
     }
 
-    footer{
+    /* Status bem pequeno embaixo */
+    .footerStatus{
+      width: 100%;
+      text-align: center;
       color: rgba(255,255,255,.55);
       font-size: 12px;
-      padding: 4px 2px;
+      padding: 6px 2px 2px;
     }
+    .footerStatus .ok{ color: rgba(121,206,220,.95); }
+    .footerStatus .bad{ color: rgba(255,107,107,.95); }
   </style>
 </head>
 
 <body>
   <div class="wrap">
 
+    <!-- ✅ Logo acima de tudo -->
+    <div class="logoBox">
+      <img src="logo-senac.png" alt="Senac" />
+    </div>
+
+    <!-- ✅ Título + período + dia centralizados -->
     <div class="topbar">
-      <div class="title">
-        <h1>Mapa de Sala</h1>
-        <div class="subline">
-          <div class="period" id="periodLabel">—</div>
-          <div class="date" id="dateLabel">—</div>
-        </div>
-      </div>
+      <h1>Salas de Aula</h1>
+      <div class="period" id="periodLabel">—</div>
+      <div class="date" id="dateLabel">—</div>
 
-      <div class="actions">
-        <div class="chip"><small>Atualiza</small> <span id="pollLabel">—</span></div>
-        <button class="btn" id="fsBtn">Tela cheia</button>
-      </div>
+      <!-- ✅ Relógio abaixo do dia -->
+      <div class="clock" id="clockLabel">--:--:--</div>
     </div>
 
-    <div class="status">
-      <div id="statusText"><span class="dot"></span>Carregando…</div>
+    <div class="mini">
+      <div class="chip"><small>Atualiza</small> <span id="pollLabel">—</span></div>
       <div class="chip"><small>Última</small> <span id="lastLabel">—</span></div>
+      <button class="btn" id="fsBtn">Tela cheia</button>
     </div>
 
+    <!-- ✅ Sem títulos de coluna -->
     <div class="panel">
-      <table aria-label="Mapa de sala">
-        <thead>
-          <tr>
-            <th>Coluna A</th>
-            <th>Coluna B</th>
-            <th>Coluna C</th>
-          </tr>
-        </thead>
+      <table aria-label="Salas de aula">
         <tbody id="tbody">
           <tr><td class="empty">Carregando dados…</td></tr>
         </tbody>
       </table>
     </div>
 
-    <footer>
-      Para TV: deixe aberto em tela cheia. Em queda de rede, o sistema tenta reconectar sozinho.
-    </footer>
-
+    <!-- ✅ Status abaixo de tudo -->
+    <div class="footerStatus" id="smallStatus">—</div>
   </div>
 
 <script>
@@ -278,11 +260,11 @@
   // ==============================
   const TZ = "America/Sao_Paulo";
 
-  // CSV publicado (Publish to web) - aba gid=356224596
+  // ✅ Endpoint direto (atualiza melhor que pub?output=csv)
   const SHEET_CSV_BASE =
-  "https://docs.google.com/spreadsheets/d/1L7Rf7ksHbH_L2-yjQl6kqg464j1aqNRdFOAPuLJNXm8/export?format=csv&gid=356224596";
+    "https://docs.google.com/spreadsheets/d/1L7Rf7ksHbH_L2-yjQl6kqg464j1aqNRdFOAPuLJNXm8/export?format=csv&gid=356224596";
 
-  // Atualização rápida (cuidado: valores muito baixos podem ficar instáveis).
+  // Atualização rápida (TV): 2000–5000ms costuma ser estável
   const POLL_MS = 3000;
 
   // Range alvo A29:C48
@@ -294,11 +276,12 @@
   // ==============================
   const periodEl = document.getElementById("periodLabel");
   const dateEl = document.getElementById("dateLabel");
+  const clockEl = document.getElementById("clockLabel");
   const tbody = document.getElementById("tbody");
-  const statusText = document.getElementById("statusText");
   const lastLabel = document.getElementById("lastLabel");
   const pollLabel = document.getElementById("pollLabel");
   const fsBtn = document.getElementById("fsBtn");
+  const smallStatus = document.getElementById("smallStatus");
 
   pollLabel.textContent = `${Math.round(POLL_MS/1000)}s`;
 
@@ -316,9 +299,9 @@
 
   function getPeriodLabel(date){
     const total = date.getHours()*60 + date.getMinutes();
-    if (total <= (11*60 + 30)) return "Manhã";  // 00:00–11:30
-    if (total <= (17*60 + 30)) return "Tarde";  // 11:31–17:30
-    return "Noite";                              // 17:31–23:59
+    if (total <= (11*60 + 30)) return "Manhã";
+    if (total <= (17*60 + 30)) return "Tarde";
+    return "Noite";
   }
 
   function formatPtBrLongDate(date){
@@ -328,10 +311,27 @@
     }).format(date);
   }
 
+  function pad2(n){ return String(n).padStart(2, "0"); }
+
+  // Relógio em tempo real (melhor esforço)
+  // - Tenta usar um "offset de rede" (sincronizado quando conseguirmos inferir)
+  // - Se não der, segue o horário local com timezone configurado
+  let networkOffsetMs = 0;
+
   function setHeaderClock(){
     const tzNow = nowInTZDate();
     periodEl.textContent = getPeriodLabel(tzNow);
     dateEl.textContent = formatPtBrLongDate(tzNow);
+  }
+
+  function renderClock(){
+    // usa Date.now() + offset e aplica timezone
+    const adjusted = new Date(Date.now() + networkOffsetMs);
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: TZ, hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false
+    }).formatToParts(adjusted);
+    const get = (t) => parts.find(p => p.type === t)?.value;
+    clockEl.textContent = `${get("hour")}:${get("minute")}:${get("second")}`;
   }
 
   // ==============================
@@ -367,12 +367,11 @@
   }
 
   // ==============================
-  // RENDER + HIGHLIGHT DE MUDANÇA
+  // RENDER (somente linhas preenchidas)
   // ==============================
   let lastDataKey = null;
 
   function render(rowsABC){
-    const isMobile = window.matchMedia("(max-width: 720px)").matches;
     const nonEmpty = rowsABC.filter(r => ((r[0]||"") + (r[1]||"") + (r[2]||"")).trim() !== "");
 
     if (!nonEmpty.length){
@@ -385,17 +384,10 @@
     lastDataKey = dataKey;
 
     tbody.innerHTML = nonEmpty.map(r => {
-      if (!isMobile){
-        return `<tr>
-          <td>${escapeHtml(r[0])}</td>
-          <td>${escapeHtml(r[1])}</td>
-          <td>${escapeHtml(r[2])}</td>
-        </tr>`;
-      }
       return `<tr>
-        <td><span class="label">Coluna A</span>${escapeHtml(r[0]) || "—"}</td>
-        <td><span class="label">Coluna B</span>${escapeHtml(r[1]) || "—"}</td>
-        <td><span class="label">Coluna C</span>${escapeHtml(r[2]) || "—"}</td>
+        <td>${escapeHtml(r[0])}</td>
+        <td>${escapeHtml(r[1])}</td>
+        <td>${escapeHtml(r[2])}</td>
       </tr>`;
     }).join("");
 
@@ -407,12 +399,9 @@
     }
   }
 
-  // ==============================
-  // STATUS
-  // ==============================
-  function setStatus(kind, message){
-    const dotClass = kind === "ok" ? "dot ok" : kind === "bad" ? "dot bad" : "dot";
-    statusText.innerHTML = `<span class="${dotClass}"></span><strong>${message}</strong>`;
+  function setSmallStatus(kind, msg){
+    const cls = kind === "ok" ? "ok" : kind === "bad" ? "bad" : "";
+    smallStatus.innerHTML = `<span class="${cls}">${escapeHtml(msg)}</span>`;
   }
 
   // ==============================
@@ -425,12 +414,25 @@
     try{
       setHeaderClock();
 
+      // cache-buster real
       const url = `${SHEET_CSV_BASE}&_cb=${Date.now()}`;
-const res = await fetch(url, {
-  cache: "no-store",
-  headers: { "Pragma": "no-cache", "Cache-Control": "no-cache" }
-});
+
+      const res = await fetch(url, {
+        cache: "no-store",
+        headers: { "Pragma": "no-cache", "Cache-Control": "no-cache" }
+      });
+
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      // Melhor esforço: sincronizar "tempo de rede" via cabeçalho Date (se exposto)
+      // (se não vier, seguimos com offset 0)
+      const dateHeader = res.headers.get("Date");
+      if (dateHeader) {
+        const serverMs = new Date(dateHeader).getTime();
+        if (!Number.isNaN(serverMs)) {
+          networkOffsetMs = serverMs - Date.now();
+        }
+      }
 
       const csv = await res.text();
       const all = parseCSV(csv);
@@ -449,11 +451,11 @@ const res = await fetch(url, {
 
       const tzNow = nowInTZDate();
       lastLabel.textContent = tzNow.toLocaleTimeString("pt-BR", { timeZone: TZ });
-      setStatus("ok", "Online · Dados atualizados");
 
+      setSmallStatus("ok", "Online · Dados atualizados");
       backoff = POLL_MS;
     } catch (e){
-      setStatus("bad", "Falha ao atualizar · Tentando reconectar");
+      setSmallStatus("bad", "Falha ao atualizar · Tentando reconectar");
       backoff = Math.min(Math.round(backoff * 1.6), 60000);
     } finally {
       clearTimeout(timer);
@@ -476,9 +478,11 @@ const res = await fetch(url, {
     fsBtn.textContent = isFullscreen() ? "Sair da tela cheia" : "Tela cheia";
   });
 
-  // start
+  // Start
   setHeaderClock();
+  renderClock();
   setInterval(setHeaderClock, 10000);
+  setInterval(renderClock, 250); // fluido para TV
   tick();
 </script>
 </body>
