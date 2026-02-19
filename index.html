@@ -7,22 +7,24 @@
 
   <style>
     :root{
-      --bg: #00244F;         /* ✅ fundo */
-      --title: #99835C;      /* ✅ cor do título */
+      /* ✅ paleta definida */
+      --bg: #00244F;
+      --title: #D9A74C;
+
+      --goldMuted: #99835C;
+      --steel: #5A6D84;
+      --graphite: #59554C;
+      --white: #FFFFFF;
 
       --text: rgba(255,255,255,.96);
-      --muted: rgba(255,255,255,.75);
+      --muted: rgba(255,255,255,.78);
       --line: rgba(255,255,255,.14);
 
-      --card: rgba(255,255,255,.10);
-      --card2: rgba(255,255,255,.07);
-
-      --pillBg: rgba(153,131,92,.18);
-      --pillBorder: rgba(153,131,92,.45);
-      --pillText: rgba(255,255,255,.95);
+      --cardTop: rgba(255,255,255,.10);
+      --cardBot: rgba(255,255,255,.06);
 
       --radius: 18px;
-      --shadow: 0 14px 40px rgba(0,0,0,.25);
+      --shadow: 0 16px 44px rgba(0,0,0,.28);
     }
 
     *{ box-sizing:border-box; }
@@ -37,7 +39,7 @@
       position: relative;
     }
 
-    /* ===== FUNDO COM VÍDEO (bem sutil) ===== */
+    /* ===== FUNDO COM VÍDEO (discreto + elegante) ===== */
     .bgVideo{
       position: fixed;
       inset: 0;
@@ -46,48 +48,49 @@
       height: 100%;
       object-fit: cover;
       transform: scale(1.05);
-      opacity: .18;
-      filter: saturate(1.05) contrast(1.05) brightness(.92);
+      opacity: .16;
+      filter: saturate(1.02) contrast(1.06) brightness(.90);
       pointer-events: none;
     }
 
-    /* tinta por cima do vídeo (mantém elegância do azul) */
+    /* tint com suas cores (gold + steel) */
     .bgTint{
       position: fixed;
       inset: -20%;
       z-index: -5;
       pointer-events: none;
       background:
-        radial-gradient(1100px 650px at 18% 12%, rgba(255,255,255,.10), transparent 60%),
-        radial-gradient(950px 520px at 82% 20%, rgba(153,131,92,.10), transparent 60%),
-        radial-gradient(900px 700px at 50% 95%, rgba(255,255,255,.08), transparent 65%),
-        linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,0) 55%);
+        radial-gradient(1100px 650px at 16% 12%, rgba(90,109,132,.22), transparent 62%),
+        radial-gradient(900px 520px at 84% 18%, rgba(217,167,76,.18), transparent 62%),
+        radial-gradient(900px 680px at 50% 92%, rgba(153,131,92,.16), transparent 68%),
+        linear-gradient(180deg, rgba(0,0,0,.26), rgba(0,0,0,0) 55%);
       mix-blend-mode: overlay;
-      filter: blur(12px) saturate(1.03);
-      animation: bgFloat 22s ease-in-out infinite;
+      filter: blur(14px) saturate(1.02);
+      animation: bgFloat 24s ease-in-out infinite;
       transform: translate3d(0,0,0);
     }
 
     @keyframes bgFloat{
       0%   { transform: translate3d(0,0,0) scale(1); }
-      50%  { transform: translate3d(1.2%, -1.0%, 0) scale(1.04); }
+      50%  { transform: translate3d(1.2%, -1.1%, 0) scale(1.05); }
       100% { transform: translate3d(0,0,0) scale(1); }
     }
 
-    /* grain bem leve */
+    /* grain bem sutil */
     .grain{
       position: fixed;
       inset: -30%;
       z-index: -4;
       pointer-events: none;
-      opacity: .055;
+      opacity: .05;
       mix-blend-mode: overlay;
       background-image:
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
       background-size: 260px 260px;
-      animation: grainMove 10s steps(10) infinite;
-      filter: contrast(115%) brightness(110%);
+      animation: grainMove 11s steps(10) infinite;
+      filter: contrast(115%) brightness(112%);
     }
+
     @keyframes grainMove{
       0%{ transform: translate3d(0,0,0) scale(1); }
       50%{ transform: translate3d(-3%, 2%, 0) scale(1.02); }
@@ -105,18 +108,18 @@
       padding: clamp(14px, 2.5vw, 28px);
       min-height: 100vh;
       display: grid;
-      grid-template-rows: auto auto 1fr auto; /* topbar, header, list, footer */
+      grid-template-rows: auto auto 1fr auto;
       gap: 14px;
       align-content: start;
       position: relative;
       z-index: 0;
     }
 
-    /* ✅ topo: botão fullscreen à direita */
+    /* topo: fullscreen à direita */
     .topActions{
       width: 100%;
       display:flex;
-      justify-content: flex-end; /* extremidade direita */
+      justify-content: flex-end;
       align-items: center;
       padding-top: 4px;
     }
@@ -134,7 +137,7 @@
       transition: transform .08s ease, filter .12s ease, border-color .12s ease;
       backdrop-filter: blur(10px);
     }
-    .btn:hover{ filter: brightness(1.05); border-color: rgba(255,255,255,.30); }
+    .btn:hover{ filter: brightness(1.06); border-color: rgba(217,167,76,.40); }
     .btn:active{ transform: translateY(1px); }
 
     .logoBox{
@@ -147,7 +150,7 @@
       width: clamp(120px, 18vw, 210px);
       height: auto;
       display: block;
-      filter: drop-shadow(0 12px 20px rgba(0,0,0,.25));
+      filter: drop-shadow(0 14px 24px rgba(0,0,0,.26));
       user-select: none;
       -webkit-user-drag: none;
     }
@@ -155,7 +158,7 @@
     .topbar{
       width: 100%;
       padding: 20px 18px 18px;
-      border: 1px solid var(--line);
+      border: 1px solid rgba(255,255,255,.14);
       border-radius: var(--radius);
       background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,0));
       box-shadow: var(--shadow);
@@ -168,8 +171,8 @@
       font-size: clamp(40px, 5.2vw, 78px);
       letter-spacing: -0.02em;
       line-height: 1;
-      color: var(--title); /* ✅ cor do título */
-      text-shadow: 0 10px 30px rgba(0,0,0,.25);
+      color: var(--title);
+      text-shadow: 0 12px 34px rgba(0,0,0,.28);
     }
 
     .period{
@@ -183,7 +186,7 @@
     .date{
       margin-top: 4px;
       font-size: clamp(14px, 1.7vw, 18px);
-      color: var(--muted);
+      color: rgba(255,255,255,.78);
     }
 
     .clock{
@@ -198,32 +201,31 @@
     .list{
       width: 100%;
       display: grid;
-      gap: 10px; /* ✅ espaço entre salas */
+      gap: 10px;
     }
 
     .rowCard{
-      border: 1px solid rgba(255,255,255,.16);
+      border: 1px solid rgba(255,255,255,.14);
       border-radius: 16px;
-      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
-      box-shadow: 0 12px 28px rgba(0,0,0,.18);
+      background: linear-gradient(180deg, var(--cardTop), var(--cardBot));
+      box-shadow: 0 14px 30px rgba(0,0,0,.18);
       backdrop-filter: blur(12px);
       padding: 14px 14px;
       display: grid;
-      grid-template-columns: 1.6fr 1.2fr auto; /* Turma | Sala | Nº pill */
+      grid-template-columns: 1.6fr 1.2fr auto;
       align-items: center;
       gap: 12px;
       overflow: hidden;
       position: relative;
     }
 
-    /* detalhe lateral sutil */
     .rowCard::before{
       content:"";
       position:absolute;
       inset: 0;
       width: 6px;
-      background: linear-gradient(180deg, rgba(153,131,92,.85), rgba(153,131,92,0));
-      opacity: .55;
+      background: linear-gradient(180deg, rgba(217,167,76,.90), rgba(153,131,92,0));
+      opacity: .60;
     }
 
     .cell{
@@ -238,32 +240,92 @@
       letter-spacing: .01em;
       padding-left: 8px;
     }
+
     .cell.sala{
       text-align: center;
       font-weight: 800;
       color: rgba(255,255,255,.92);
     }
 
-    /* ✅ Nº como pill */
+    /* ✅ PILL PREMIUM + sheen */
     .pill{
       justify-self: end;
-      min-width: 56px;
-      padding: 8px 12px;
+      min-width: 64px;
+      padding: 9px 14px;
       border-radius: 999px;
-      border: 1px solid var(--pillBorder);
-      background: var(--pillBg);
-      color: var(--pillText);
+      position: relative;
+      overflow: hidden;
+
+      background:
+        radial-gradient(120% 120% at 30% 18%, rgba(255,255,255,.16), transparent 60%),
+        linear-gradient(180deg, rgba(153,131,92,.34), rgba(90,109,132,.18)),
+        linear-gradient(180deg, rgba(0,0,0,.24), rgba(0,0,0,.10));
+      border: 1px solid rgba(217,167,76,.55);
+
+      color: #FFFFFF;
       font-weight: 950;
-      letter-spacing: .08em;
+      letter-spacing: .10em;
       text-align: center;
       backdrop-filter: blur(10px);
-      box-shadow: 0 10px 22px rgba(0,0,0,.18);
+
+      box-shadow:
+        0 14px 26px rgba(0,0,0,.22),
+        inset 0 1px 0 rgba(255,255,255,.18),
+        inset 0 -1px 0 rgba(0,0,0,.28);
     }
 
-    /* Highlight quando atualizar */
+    .pill::before{
+      content:"";
+      position:absolute;
+      inset: 1px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(217,167,76,.22), transparent 55%);
+      opacity: .85;
+      pointer-events:none;
+    }
+
+    .pill::after{
+      content:"";
+      position:absolute;
+      inset: -2px;
+      border-radius: 999px;
+      background: radial-gradient(60% 120% at 50% 0%, rgba(217,167,76,.28), transparent 70%);
+      filter: blur(6px);
+      opacity: .9;
+      z-index: -1;
+      pointer-events:none;
+    }
+
+    .pill .sheen{
+      position:absolute;
+      inset: -60% -40%;
+      background: linear-gradient(
+        115deg,
+        transparent 35%,
+        rgba(255,255,255,.22) 45%,
+        rgba(217,167,76,.16) 50%,
+        rgba(255,255,255,.14) 55%,
+        transparent 65%
+      );
+      transform: translateX(-60%);
+      opacity: .65;
+      pointer-events:none;
+      mix-blend-mode: screen;
+      animation: pillSheen 6.8s ease-in-out infinite;
+      filter: blur(0.5px);
+    }
+
+    @keyframes pillSheen{
+      0%   { transform: translateX(-65%); opacity: 0; }
+      18%  { opacity: .55; }
+      50%  { transform: translateX(65%); opacity: .55; }
+      82%  { opacity: .10; }
+      100% { transform: translateX(65%); opacity: 0; }
+    }
+
     .rowCard.changed{
-      outline: 2px solid rgba(255,255,255,.22);
-      background: linear-gradient(180deg, rgba(153,131,92,.16), rgba(255,255,255,.06));
+      outline: 2px solid rgba(90,109,132,.35);
+      background: linear-gradient(180deg, rgba(90,109,132,.14), rgba(255,255,255,.06));
     }
 
     .empty{
@@ -288,7 +350,7 @@
       .rowCard::before{ width: 0; }
     }
 
-    /* ===== FOOTER: última atualização à esquerda ===== */
+    /* ===== FOOTER ===== */
     .footerBar{
       width: 100%;
       display:flex;
@@ -310,13 +372,16 @@
       font-size: 12px;
       text-align: right;
     }
-    .status .ok{ color: rgba(255,255,255,.85); }
+    .status .ok{ color: rgba(255,255,255,.88); }
     .status .bad{ color: rgba(255,107,107,.95); }
+
+    @media (prefers-reduced-motion: reduce){
+      .bgTint, .grain, .pill .sheen{ animation: none; opacity: 0; }
+    }
   </style>
 </head>
 
 <body>
-  <!-- Vídeo (suba bg.mp4) -->
   <video class="bgVideo" autoplay muted loop playsinline preload="auto">
     <source src="bg.mp4" type="video/mp4" />
   </video>
@@ -324,7 +389,6 @@
   <div class="grain" aria-hidden="true"></div>
 
   <div class="wrap">
-    <!-- ✅ fullscreen no topo, à direita -->
     <div class="topActions">
       <button class="btn" id="fsBtn">Tela cheia</button>
     </div>
@@ -344,7 +408,6 @@
       <div class="empty">Carregando dados…</div>
     </div>
 
-    <!-- ✅ abaixo de tudo: última atualização à esquerda -->
     <div class="footerBar">
       <div class="lastUpdate" id="lastUpdateLabel">Última atualização: —</div>
       <div class="status" id="statusLabel">—</div>
@@ -438,7 +501,6 @@
       .replaceAll('"',"&quot;").replaceAll("'","&#039;");
   }
 
-  // Render cards mantendo A|B|C
   let lastDataKey = null;
 
   function renderCards(rowsABC){
@@ -460,7 +522,7 @@
         <div class="rowCard">
           <div class="cell turma">${escapeHtml(r[0])}</div>
           <div class="cell sala">${escapeHtml(r[1])}</div>
-          <div class="pill">${escapeHtml(r[2])}</div>
+          <div class="pill"><span class="sheen"></span>${escapeHtml(r[2])}</div>
         </div>
       `;
     }).join("");
