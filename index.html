@@ -27,7 +27,7 @@
       --radius: 18px;
       --shadow: 0 16px 44px rgba(0,0,0,.34);
 
-      /* burn-in offset (muito sutil) */
+      /* burn-in offset */
       --boX: 0px;
       --boY: 0px;
 
@@ -56,8 +56,11 @@
       height: 100%;
       object-fit: cover;
       transform: scale(1.05);
-      opacity: .14;
-      filter: saturate(1.02) contrast(1.05) brightness(.88);
+
+      /* ✅ mais visível */
+      opacity: .22;
+
+      filter: saturate(1.06) contrast(1.06) brightness(.92);
       pointer-events: none;
     }
     @media (max-width: 720px){
@@ -113,7 +116,7 @@
       .topbar{ animation: none !important; }
     }
 
-    /* ===== CONTEÚDO (anti burn-in) ===== */
+    /* ===== CONTEÚDO ===== */
     .wrapMotion{
       transform: translate3d(var(--boX), var(--boY), 0);
       transition: transform 900ms ease;
@@ -133,7 +136,6 @@
       z-index: 0;
     }
 
-    /* topo: fullscreen à direita */
     .topActions{
       width: 100%;
       display:flex;
@@ -185,8 +187,6 @@
       box-shadow: var(--shadow);
       backdrop-filter: blur(12px);
       text-align: center;
-
-      /* motion sutil “premium” */
       animation: headerBreath 8.5s ease-in-out infinite;
       transform-origin: center;
     }
@@ -227,7 +227,6 @@
       color: rgba(255,255,255,.92);
     }
 
-    /* ===== LISTA ===== */
     .list{
       width: 100%;
       display: grid;
@@ -256,9 +255,7 @@
       will-change: transform;
     }
 
-    .rowCard.enter{
-      animation: cardIn .22s ease-out both;
-    }
+    .rowCard.enter{ animation: cardIn .22s ease-out both; }
     @keyframes cardIn{
       from{ opacity: 0; transform: translateY(6px); }
       to  { opacity: 1; transform: translateY(0); }
@@ -306,7 +303,6 @@
       }
     }
 
-    /* ===== PILL PREMIUM + sheen ===== */
     .pill{
       justify-self: end;
       min-width: 64px;
@@ -410,7 +406,6 @@
       .rowCard::before{ width: 0; }
     }
 
-    /* ===== FOOTER ===== */
     .footerBar{
       width: 100%;
       display:flex;
@@ -517,7 +512,6 @@
   const fsBtn = document.getElementById("fsBtn");
 
   const bgVideo = document.getElementById("bgVideo");
-  const wrapMotion = document.getElementById("wrapMotion");
 
   // =========================
   // Fallback vídeo
@@ -574,10 +568,15 @@
     return new Date(`${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}:${get("second")}`);
   }
 
+  /* ✅ horários ajustados:
+     Manhã: 00:00–11:30
+     Tarde: 11:31–17:00
+     Noite: 17:01–23:59
+  */
   function getPeriodLabel(date){
     const total = date.getHours()*60 + date.getMinutes();
     if (total <= (11*60 + 30)) return "Manhã";
-    if (total <= (17*60 + 30)) return "Tarde";
+    if (total <= (17*60 + 0)) return "Tarde";
     return "Noite";
   }
 
@@ -641,7 +640,6 @@
   // Diff DOM render
   // =========================
   const rowMap = new Map();
-  let initialPaint = true;
 
   function makeCard(rowIndex, a, b, c){
     const card = document.createElement("div");
@@ -730,8 +728,6 @@
     if (rowMap.size === 0){
       listEl.innerHTML = `<div class="empty">Sem dados em A${START_ROW}:C${END_ROW}.</div>`;
     }
-
-    initialPaint = false;
   }
 
   function setStatus(kind, msg){
